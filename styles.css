@@ -175,6 +175,18 @@ button {
   width: 17px;
 }
 
+.rail-group {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 5px;
+  padding: 0 0 8px;
+  width: 100%;
+}
+
+.rail-group + .rail-group {
+  padding-top: 4px;
+}
+
 .rail-spacer {
   flex: 1;
 }
@@ -1031,6 +1043,13 @@ button.heat-cell:hover {
   margin-bottom: 12px;
 }
 
+.structure-summary {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
 .category-card {
   padding: 13px 14px;
 }
@@ -1073,6 +1092,288 @@ button.heat-cell:hover {
 
 .category-item strong {
   color: var(--ink-900);
+}
+
+.cockpit-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
+  margin-bottom: 12px;
+}
+
+.priority-list,
+.evidence-grid,
+.gate-grid,
+.control-matrix,
+.risk-register-grid,
+.onboarding-grid,
+.structure-tree,
+.vcc-workspace {
+  display: grid;
+  gap: 10px;
+}
+
+.priority-list {
+  padding: 0 12px 12px;
+}
+
+.priority-row {
+  align-items: center;
+  background: var(--ink-50);
+  border: var(--line);
+  border-radius: 10px;
+  color: var(--ink-700);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.priority-row:hover {
+  border-color: var(--teal);
+  transform: translateY(-1px);
+}
+
+.priority-row strong,
+.priority-row small {
+  display: block;
+}
+
+.priority-row strong {
+  color: var(--ink-900);
+  font-size: 11px;
+}
+
+.priority-row small {
+  color: var(--ink-500);
+  font-size: 9px;
+  margin-top: 3px;
+}
+
+.compact-evidence {
+  grid-template-columns: 1fr;
+  padding: 0 12px 12px;
+}
+
+.evidence-card,
+.gate-card,
+.control-card,
+.risk-statement-card,
+.onboarding-card,
+.structure-card,
+.subfund-card {
+  background: var(--paper);
+  border: var(--line);
+  border-radius: 11px;
+  min-width: 0;
+  padding: 13px;
+}
+
+.evidence-card {
+  background: var(--ink-50);
+}
+
+.evidence-card h3,
+.gate-card h3,
+.control-card h3,
+.risk-statement-card h3,
+.onboarding-card h3,
+.structure-card h3,
+.subfund-card h3 {
+  color: var(--ink-900);
+  font-size: 12px;
+  margin: 0;
+}
+
+.evidence-card p,
+.gate-card p,
+.control-card p,
+.risk-statement-card p,
+.onboarding-card p,
+.structure-card p,
+.subfund-card p {
+  color: var(--ink-500);
+  font-size: 10px;
+  line-height: 1.55;
+  margin: 5px 0 0;
+}
+
+.evidence-row {
+  align-items: center;
+  border-top: var(--line);
+  color: var(--ink-600);
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 9px 0;
+}
+
+.evidence-row:first-of-type {
+  border-top: 0;
+}
+
+.evidence-row span {
+  color: var(--ink-700);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.evidence-row small {
+  color: var(--ink-500);
+  font-size: 9px;
+  line-height: 1.45;
+  max-width: 62%;
+  text-align: right;
+}
+
+.gate-grid,
+.control-matrix {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.risk-register-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.risk-statement-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.risk-statement-meta {
+  background: var(--ink-50);
+  border-radius: 9px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 10px;
+}
+
+.risk-statement-meta span,
+.risk-statement-meta strong {
+  display: block;
+}
+
+.risk-statement-meta span {
+  color: var(--ink-800);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.risk-statement-meta strong {
+  color: var(--ink-500);
+  font-size: 8px;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.pipeline {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
+.pipeline-step {
+  align-items: center;
+  background: var(--paper);
+  border: var(--line);
+  border-radius: 12px;
+  color: var(--ink-500);
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+}
+
+.pipeline-step span {
+  align-items: center;
+  background: var(--ink-50);
+  border-radius: 50%;
+  color: var(--ink-700);
+  display: flex;
+  font-weight: 800;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.pipeline-step.active {
+  border-color: rgba(47, 143, 127, 0.35);
+  color: var(--teal);
+}
+
+.pipeline-step.active span {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.onboarding-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.onboarding-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compact-primary {
+  min-height: 31px;
+  padding: 0 10px;
+}
+
+.compact-checklist {
+  gap: 6px;
+}
+
+.structure-tree {
+  padding: 0 14px 14px;
+}
+
+.umbrella-card {
+  background: linear-gradient(135deg, var(--paper), var(--ink-50));
+}
+
+.structure-meta {
+  color: var(--ink-500);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 9px;
+  gap: 8px;
+  margin: 8px 0 10px;
+}
+
+.structure-meta span {
+  background: var(--paper);
+  border: var(--line);
+  border-radius: 999px;
+  padding: 5px 8px;
+}
+
+.subfund-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.subfund-card {
+  background: var(--paper);
+}
+
+.vcc-panel {
+  overflow: hidden;
+}
+
+.vcc-detail-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 0 14px 14px;
+}
+
+.vcc-subfunds {
+  padding: 14px;
 }
 
 .explainer {
@@ -2247,12 +2548,22 @@ tr:hover td {
 
   .risk-layout,
   .tracker-grid,
-  .rules-layout {
+  .rules-layout,
+  .cockpit-grid {
     grid-template-columns: 1fr;
   }
 
-  .rule-pack-grid {
+  .rule-pack-grid,
+  .onboarding-grid,
+  .control-matrix,
+  .gate-grid,
+  .subfund-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .risk-register-grid,
+  .vcc-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .nav-copy small {
@@ -2288,11 +2599,19 @@ tr:hover td {
   }
 
   .category-grid,
+  .structure-summary,
   .doc-grid,
   .settings-grid,
   .report-grid,
   .rule-pack-grid,
-  .calculator-grid {
+  .calculator-grid,
+  .onboarding-grid,
+  .control-matrix,
+  .gate-grid,
+  .risk-register-grid,
+  .subfund-grid,
+  .vcc-detail-grid,
+  .pipeline {
     grid-template-columns: 1fr;
   }
 
