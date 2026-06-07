@@ -1094,7 +1094,93 @@ button.heat-cell:hover {
   color: var(--ink-900);
 }
 
-.cockpit-grid {
+.overview-hero {
+  background:
+    radial-gradient(circle at top right, rgba(191, 220, 121, 0.25), transparent 34%),
+    linear-gradient(135deg, var(--paper), var(--ink-50));
+  border: var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(420px, 0.8fr);
+  margin-bottom: 14px;
+  overflow: hidden;
+  padding: 18px;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-copy .tag {
+  align-self: flex-start;
+}
+
+.hero-copy h2 {
+  color: var(--ink-950);
+  font-size: 22px;
+  letter-spacing: -0.7px;
+  line-height: 1.16;
+  margin-top: 12px;
+  max-width: 620px;
+}
+
+.hero-copy p {
+  color: var(--ink-600);
+  font-size: 12px;
+  line-height: 1.65;
+  margin-top: 8px;
+  max-width: 650px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.hero-metrics {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hero-metric {
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  border: var(--line);
+  border-radius: 13px;
+  padding: 14px;
+}
+
+.hero-metric span,
+.hero-metric small {
+  color: var(--ink-500);
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.hero-metric strong {
+  color: var(--ink-950);
+  display: block;
+  font-family: "Manrope", sans-serif;
+  font-size: 26px;
+  letter-spacing: -0.8px;
+  margin: 7px 0 4px;
+}
+
+.hero-metric small {
+  font-weight: 600;
+  line-height: 1.35;
+  text-transform: none;
+}
+
+.dashboard-focus-grid {
   display: grid;
   gap: 12px;
   grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
@@ -2601,7 +2687,8 @@ tr:hover td {
   .risk-layout,
   .tracker-grid,
   .rules-layout,
-  .cockpit-grid {
+  .dashboard-focus-grid,
+  .overview-hero {
     grid-template-columns: 1fr;
   }
 
@@ -2653,6 +2740,7 @@ tr:hover td {
 
   .category-grid,
   .structure-summary,
+  .hero-metrics,
   .doc-grid,
   .settings-grid,
   .report-grid,

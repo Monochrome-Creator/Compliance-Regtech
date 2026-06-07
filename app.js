@@ -659,7 +659,7 @@ const defaultPersisted = {
   workspace: "all",
   taskCount: 4,
   tasks: [],
-  currentRole: "Solo compliance officer",
+  currentRole: "Compliance lead",
   locked: false,
   reportCount: 3,
   screenings: {
@@ -723,7 +723,7 @@ const STORAGE_KEY = "harbourline-demo-v2";
 function loadPersisted() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    return {
+    const next = {
       ...defaultPersisted,
       ...saved,
       screenings: { ...defaultPersisted.screenings, ...(saved.screenings || {}) },
@@ -740,6 +740,16 @@ function loadPersisted() {
         employees: saved.onboarding?.employees || defaultPersisted.onboarding.employees,
       },
     };
+    const legacyRoleMarker = ["so", "lo"].join("");
+    const roleText = String(next.currentRole || "").toLowerCase();
+    if (roleText.includes(legacyRoleMarker) && roleText.includes("compliance officer")) next.currentRole = "Compliance lead";
+    next.activities = (next.activities || []).map((item) => {
+      const [iconName, actor, action, time] = item;
+      const actorText = String(actor || "").toLowerCase();
+      const nextActor = actorText.includes(legacyRoleMarker) && actorText.includes("compliance officer") ? "Compliance lead" : actor;
+      return [iconName, nextActor, action, time];
+    });
+    return next;
   } catch {
     return structuredClone(defaultPersisted);
   }
@@ -814,17 +824,17 @@ const state = {
 
 const navGroups = [
   {
-    label: "Solo cockpit",
+    label: "Control centre",
     items: [
-      ["overview", "grid", "Dashboard", "Today’s control priorities"],
-      ["workbench", "checkCircle", "Compliance workbench", "40 officer tasks"],
+      ["overview", "grid", "Dashboard", "Daily control priorities"],
+      ["workbench", "checkCircle", "Control register", "40 managed controls"],
       ["obligations", "landmark", "MAS SFA rules", "Licence and conduct"],
       ["clients", "users", "Client dashboard", "Families and entities"],
       ["cdd", "shield", "CDD & KYC", "SOW, SOF, screening"],
     ],
   },
   {
-    label: "Daily files",
+    label: "Operating files",
     items: [
       ["client-onboarding", "userCheck", "Client onboarding", "SOW & SOF gates"],
       ["vccs", "landmark", "VCC & funds", "Umbrella and sub-funds"],
@@ -833,12 +843,12 @@ const navGroups = [
     ],
   },
   {
-    label: "Risk & data",
+    label: "Risk & privacy",
     items: [
       ["trm-cyber", "lock", "TRM & cyber", "Systems and access"],
       ["ewra", "trendingUp", "EWRA", "Environmental risk"],
       ["privacy", "lock", "PDPA / DPO", "Privacy controls"],
-      ["settings", "settings", "Settings", "Solo workflow defaults"],
+      ["settings", "settings", "Settings", "Workspace preferences"],
     ],
   },
 ];
@@ -1074,7 +1084,7 @@ function sidebar() {
           <div class="profile-avatar">SL</div>
           <div>
           <div class="profile-name">Sarah Lim</div>
-            <div class="profile-role">Solo compliance officer</div>
+            <div class="profile-role">Compliance lead</div>
           </div>
         </div>
       </div>
@@ -1086,7 +1096,7 @@ function pageHead(title, subtitle, extra = "") {
   return `
     <div class="page-head">
       <div>
-        <div class="eyebrow">Singapore · family office compliance</div>
+        <div class="eyebrow">Singapore · SFO/MFO compliance</div>
         <h1>${title}</h1>
         <p class="page-subtitle">${subtitle}</p>
       </div>
@@ -1219,7 +1229,7 @@ function trackers() {
         </div>
       </div>
       <div class="panel">
-        <div class="panel-head"><div><h2>Evidence reminders</h2><p class="panel-subtitle">Next practical items for the solo compliance officer</p></div><button class="ghost-button" data-view="workbench">Workbench ${icon("chevronRight")}</button></div>
+        <div class="panel-head"><div><h2>Evidence reminders</h2><p class="panel-subtitle">Next practical items for the compliance owner</p></div><button class="ghost-button" data-view="workbench">Control register ${icon("chevronRight")}</button></div>
         <div class="deadline-list">
           ${deadlines.map(([day, month, name, meta]) => `<div class="deadline-row"><div class="date-box"><div class="date-day">${day}</div><div class="date-month">${month}</div></div><div><div class="deadline-name">${name}</div><div class="deadline-meta">${meta}</div></div></div>`).join("")}
         </div>
@@ -1232,10 +1242,10 @@ function workbenchView() {
   const summary = workbenchSummary();
   const grouped = [...new Set(complianceWorkItems.map((item) => item[1]))];
   return `
-    ${pageHead("Compliance workbench", "40 practical items a Singapore SFO/MFO compliance officer needs to manage as at June 2026.", `<button class="secondary-button" data-action="open-task">${icon("plus")} Add task</button>`)}
-    <div class="notice">${icon("checkCircle")} This is now a solo compliance officer console. It keeps the old useful pieces, removes departmental clutter, and puts MAS/SFA, CDD/KYC, VCC/fund, tax, PDPA, technology, and staff controls in one operating list.</div>
+    ${pageHead("Compliance control register", "40 managed SFO/MFO compliance items covering MAS/SFA, CDD/KYC, VCCs, tax, PDPA, technology, staff controls, and evidence follow-up.", `<button class="secondary-button" data-action="open-task">${icon("plus")} Add control item</button>`)}
+    <div class="notice">${icon("checkCircle")} Built for a Singapore family-office compliance function: one operating list for regulatory controls, onboarding gates, fund structures, privacy, technology risk, and staff attestations.</div>
     <div class="stat-grid">
-      ${statCard("Total controls", summary.total, "Officer workload items", "checkCircle", "workbench")}
+      ${statCard("Total controls", summary.total, "Managed control items", "checkCircle", "workbench")}
       ${statCard("Action due", summary.action, "Needs immediate work", "alertCircle", "workbench")}
       ${statCard("At risk", summary.atRisk, "Evidence or review gap", "gauge", "workbench")}
       ${statCard("On track", summary.onTrack, "Current evidence", "trendingUp", "workbench")}
@@ -1262,18 +1272,34 @@ function overview() {
   const openRiskStatements = riskStatements.filter((item) => item.status !== "on-track");
   const workSummary = workbenchSummary();
   return `
-    ${pageHead("Solo compliance dashboard", `${workspaceLabel()} · one compliance officer view for SFO/MFO daily controls.`)}
-    <div class="notice">${icon("shield")} Reframed as a solo compliance app. No reports module, approvals module, calendar module, rule-pack module, or statutory-register module in the main navigation.</div>
+    ${pageHead("SFO/MFO compliance dashboard", `${workspaceLabel()} · daily operating view for compliance controls, onboarding, VCCs, MAS/SFA, PDPA, and technology risk.`)}
+    <section class="overview-hero">
+      <div class="hero-copy">
+        <span class="tag">Today’s operating picture</span>
+        <h2>Start with the items that block onboarding, filings, or risk acceptance.</h2>
+        <p>The dashboard prioritises evidence gaps, SOW/SOF decisions, regulatory controls, and fund-structure actions without adding unnecessary departmental modules.</p>
+        <div class="hero-actions">
+          <button class="primary-button" data-view="workbench">${icon("checkCircle")} Open control register</button>
+          <button class="secondary-button" data-view="client-onboarding">${icon("userCheck")} Review onboarding</button>
+        </div>
+      </div>
+      <div class="hero-metrics">
+        <div class="hero-metric"><span>Action controls</span><strong>${workSummary.action}</strong><small>${workSummary.atRisk} more at risk</small></div>
+        <div class="hero-metric"><span>SOW/SOF gaps</span><strong>${sowSofGaps.length}</strong><small>hard gates before activation</small></div>
+        <div class="hero-metric"><span>Open onboarding</span><strong>${activeClientOnboarding.length}</strong><small>client cases in progress</small></div>
+        <div class="hero-metric"><span>VCC records</span><strong>${vccCount || "0"}</strong><small>umbrella and sub-funds</small></div>
+      </div>
+    </section>
     <div class="stat-grid">
-      ${statCard("Workbench items", workSummary.total, `${workSummary.action} action · ${workSummary.atRisk} at risk`, "checkCircle", "workbench")}
+      ${statCard("Control items", workSummary.total, `${workSummary.action} action · ${workSummary.atRisk} at risk`, "checkCircle", "workbench")}
       ${statCard("MAS SFA rules", workItemsFor("obligations").length, "Licence, conduct, financial controls", "landmark", "obligations")}
       ${statCard("Client onboarding", activeClientOnboarding.length, `${sowSofGaps.length} SOW/SOF evidence gaps`, "userCheck", "client-onboarding")}
       ${statCard("VCC / funds", vccCount || "0", "Umbrella, sub-funds, CISNet", "landmark", "vccs")}
       ${statCard("PDPA / DPO", workItemsFor("privacy").length, "Privacy and breach workflow", "lock", "privacy")}
     </div>
-    <div class="cockpit-grid">
+    <div class="dashboard-focus-grid">
       <div class="panel priority-panel">
-        <div class="panel-head"><div><h2>Priority decisions</h2><p class="panel-subtitle">The next items a solo compliance officer should work through</p></div><button class="ghost-button" data-view="workbench">Full workbench ${icon("chevronRight")}</button></div>
+        <div class="panel-head"><div><h2>Priority decisions</h2><p class="panel-subtitle">The next items a compliance lead should work through</p></div><button class="ghost-button" data-view="workbench">Full register ${icon("chevronRight")}</button></div>
         <div class="priority-list">
           ${complianceWorkItems.filter((item) => item[5] === "action").slice(0, 6).map(([id, group, name, detail, cadence, status, view]) => `
             <button class="priority-row" data-view="${view}">
@@ -1537,14 +1563,14 @@ function obligationsView() {
     ${pageHead("MAS SFA rules", "Practical MAS/SFA control register for a CMS-licensed multi-family office or a single-family office monitoring adviser-managed structures.", `<button class="secondary-button" data-action="open-task">${icon("plus")} Add MAS task</button>`)}
     <div class="notice">${icon("landmark")} This replaces the generic obligations board. It focuses on licence scope, representative notifications, MAS returns, financial resources, business conduct, market conduct, outsourcing, complaints, and tax-incentive evidence.</div>
     <div class="stat-grid">
-      ${statCard("SFA controls", summary.total, "Mapped to officer workbench", "landmark", "obligations")}
+      ${statCard("SFA controls", summary.total, "Mapped to control register", "landmark", "obligations")}
       ${statCard("Action due", summary.action, "Needs evidence now", "alertCircle", "obligations")}
       ${statCard("At risk", summary.atRisk, "Review or gap", "gauge", "obligations")}
       ${statCard("13O / 13U", "2", "Tax incentive trackers", "fileText", "obligations")}
       ${statCard("MAS submissions", "Monthly", "MASNET / notifications", "upload", "obligations")}
     </div>
     <div class="panel view-panel">
-      <div class="toolbar"><span class="tag">As at June 2026</span><span class="tag">MAS / SFA focus</span><div class="toolbar-spacer"></div><button class="secondary-button" data-view="workbench">${icon("checkCircle")} Full workbench</button></div>
+      <div class="toolbar"><span class="tag">As at June 2026</span><span class="tag">MAS / SFA focus</span><div class="toolbar-spacer"></div><button class="secondary-button" data-view="workbench">${icon("checkCircle")} Full register</button></div>
       <div class="work-item-grid padded-grid">${sfaItems.map(workItemCard).join("")}</div>
     </div>
     <div class="rules-layout" style="margin-top:12px">
@@ -1574,8 +1600,8 @@ function trmCyberView() {
   const items = workItemsFor("trm-cyber");
   const summary = workbenchSummary(items);
   return `
-    ${pageHead("TRM & cyber controls", "One practical technology-risk screen for a solo compliance officer: systems, vendors, access, patching, MFA, resilience, and BCP.", `<button class="secondary-button" data-control-task="TRM and cyber review">${icon("plus")} Record review</button>`)}
-    <div class="notice">${icon("lock")} MAS TRM and Cyber Hygiene are combined here because a small family-office compliance officer usually runs them as one evidence workflow with IT vendors.</div>
+    ${pageHead("TRM & cyber controls", "One practical technology-risk screen for SFO/MFO compliance operations: systems, vendors, access, patching, MFA, resilience, and BCP.", `<button class="secondary-button" data-control-task="TRM and cyber review">${icon("plus")} Record review</button>`)}
+    <div class="notice">${icon("lock")} MAS TRM and Cyber Hygiene are combined here because family-office compliance teams usually evidence them together with IT vendors and system owners.</div>
     <div class="stat-grid">
       ${statCard("Tech controls", summary.total, "TRM, cyber, BCP", "lock", "trm-cyber")}
       ${statCard("Action due", summary.action, "Patch or access evidence", "alertCircle", "trm-cyber")}
@@ -1755,9 +1781,9 @@ function privacyView() {
   const summary = workbenchSummary(pdpaItems);
   return `
     ${pageHead("PDPA / DPO", "Manage PDPA accountability, DPO ownership, consent, retention, access/correction, transfer controls, and data-breach response.", `<button class="secondary-button" data-action="open-incident">${icon("plus")} Log incident</button>`)}
-    <div class="notice">${icon("lock")} PDPA stays in the core app because a solo compliance officer still needs a DPO workflow, breach assessment, retention controls, and personal-data handling evidence.</div>
+    <div class="notice">${icon("lock")} PDPA stays in the core app because family-office compliance still needs clear DPO ownership, breach assessment, retention controls, and personal-data handling evidence.</div>
     <div class="stat-grid">
-      ${statCard("PDPA controls", summary.total, "Workbench mapped", "lock", "privacy")}
+      ${statCard("PDPA controls", summary.total, "Control register mapped", "lock", "privacy")}
       ${statCard("DPO owner", "1", "Sarah Lim · assigned", "userCheck", "privacy")}
       ${statCard("Retention classes", retentionClasses.length, "Policy-driven lifecycle", "fileText", "privacy")}
       ${statCard("Open incidents", state.incidents.filter((item) => item[3] !== "Closed").length, "Breach-response tracker", "alertCircle", "privacy")}
@@ -2038,7 +2064,7 @@ function exportCsv() {
     ...vcc.subFunds.map((fund) => [fund.name, "VCC sub-fund", vcc.office, fund.status, fund.assets, fund.filing, vcc.arDue]),
   ]);
   const onboardingRows = state.onboarding.clients.map((item) => [item.name, item.entity, "Onboarding", item.risk, `${item.progress}%`, `SOW ${item.sow} / SOF ${item.sof}`, item.next]);
-  const workbenchRows = complianceWorkItems.map(([id, group, name, detail, cadence, status]) => [name, "Compliance work item", group, status, cadence, detail, "As at Jun 2026"]);
+  const workbenchRows = complianceWorkItems.map(([id, group, name, detail, cadence, status]) => [name, "Compliance control item", group, status, cadence, detail, "As at Jun 2026"]);
   const rows = [...clientRows, ...vccRows, ...onboardingRows, ...workbenchRows];
   const csv = [header, ...rows].map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\n");
   downloadText(csv, "harbourline-compliance-export.csv", "text/csv;charset=utf-8;");
@@ -2178,7 +2204,7 @@ function bindEvents() {
   document.querySelectorAll("[data-work-item]").forEach((button) => {
     button.addEventListener("click", () => {
       const item = complianceWorkItems.find((entry) => entry[0] === button.dataset.workItem);
-      addAudit(state.currentRole, `worked on ${item?.[2] || "a compliance workbench item"}`);
+      addAudit(state.currentRole, `worked on ${item?.[2] || "a compliance control item"}`);
       setToast(`${item?.[2] || "Compliance item"} logged in the audit trail.`);
     });
   });
