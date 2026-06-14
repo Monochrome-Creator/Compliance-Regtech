@@ -1778,6 +1778,20 @@ tr:hover td {
   font-weight: 700;
 }
 
+.table-action.ghost {
+  color: var(--ink-500);
+}
+
+.table-action.ghost:hover {
+  color: var(--ink-700);
+}
+
+.table-action svg {
+  height: 12px;
+  width: 12px;
+  vertical-align: -2px;
+}
+
 .obligation-board {
   display: grid;
   gap: 12px;

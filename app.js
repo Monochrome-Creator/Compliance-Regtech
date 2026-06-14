@@ -951,6 +951,7 @@ const iconPaths = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>',
   sun: '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>',
   trendingUp: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>',
+  undo: '<polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>',
   upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line>',
   userCheck: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
@@ -1644,7 +1645,7 @@ function cddView() {
     <div class="panel" style="margin-top:12px">
       <div class="panel-head"><div><h2>Client evidence matrix</h2><p class="panel-subtitle">SOW and SOF are visible as separate gates</p></div><span class="tag">${state.onboarding.clients.length} cases</span></div>
       <div class="table-wrap"><table><thead><tr><th>Case</th><th>Entity</th><th>Risk</th><th>Source of wealth</th><th>Source of funds</th><th>Next action</th><th></th></tr></thead><tbody>
-        ${state.onboarding.clients.map((item) => `<tr><td><div class="table-name">${item.name}</div><div class="table-meta">${item.stage}</div></td><td>${item.entity}</td><td><span class="risk-pill ${item.risk}">${titleCase(item.risk)}</span></td><td>${evidenceStatus(item.sow)}</td><td>${evidenceStatus(item.sof)}</td><td>${item.next}</td><td><button class="table-action" data-advance-client="${item.id}">Advance</button></td></tr>`).join("")}
+        ${state.onboarding.clients.map((item) => `<tr><td><div class="table-name">${item.name}</div><div class="table-meta">${item.stage}</div></td><td>${item.entity}</td><td><span class="risk-pill ${item.risk}">${titleCase(item.risk)}</span></td><td>${evidenceStatus(item.sow)}</td><td>${evidenceStatus(item.sof)}</td><td>${item.next}</td><td><div class="button-row"><button class="table-action" data-advance-client="${item.id}">Advance</button><button class="table-action ghost" data-reverse-client="${item.id}" title="Undo last step">Undo</button></div></td></tr>`).join("")}
       </tbody></table></div>
     </div>
   `;
@@ -1668,8 +1669,13 @@ function clientOnboardingView() {
           <p>${item.next}</p>
           <div class="button-row">
             <button class="table-action" data-evidence-case="${item.id}" data-evidence-type="sow">Update SOW</button>
+            <button class="table-action ghost" data-reverse-evidence="${item.id}" data-evidence-type="sow" title="Undo SOW step">${icon("undo")} SOW</button>
             <button class="table-action" data-evidence-case="${item.id}" data-evidence-type="sof">Update SOF</button>
+            <button class="table-action ghost" data-reverse-evidence="${item.id}" data-evidence-type="sof" title="Undo SOF step">${icon("undo")} SOF</button>
+          </div>
+          <div class="button-row">
             <button class="primary-button compact-primary" data-advance-client="${item.id}">${icon("check")} Advance</button>
+            <button class="secondary-button compact-primary" data-reverse-client="${item.id}">${icon("undo")} Reverse</button>
           </div>
         </article>
       `).join("")}
@@ -1698,7 +1704,10 @@ function employeeOnboardingView() {
           <div class="checklist compact-checklist">
             ${entries.map(([key, done]) => `<div class="check-item"><span class="check-name"><span class="check-mark ${done ? "" : "warn"}">${icon(done ? "check" : "alertCircle")}</span>${labels[key]}</span><span class="status-pill ${done ? "on-track" : "action"}">${done ? "Done" : "Open"}</span></div>`).join("")}
           </div>
-          <button class="primary-button compact-primary" data-advance-employee="${item.id}">${icon("check")} Complete next item</button>
+          <div class="button-row">
+            <button class="primary-button compact-primary" data-advance-employee="${item.id}">${icon("check")} Complete next item</button>
+            <button class="secondary-button compact-primary" data-reverse-employee="${item.id}">${icon("undo")} Undo item</button>
+          </div>
         </article>`;
       }).join("")}
     </div>
@@ -1975,7 +1984,7 @@ function rulesView() {
             <div class="category-head"><span class="category-icon">${icon(packIcon(pack.id))}</span><span class="status-pill ${approval === "approved" ? "on-track" : "at-risk"}">${approval === "approved" ? "Adviser approved" : "Review due"}</span></div>
             <h3>${pack.name}</h3><p>${pack.scope}</p>
             <div class="rule-card-foot"><span>${pack.controls} controls</span><span>${pack.effective}</span></div>
-            <div class="button-row" style="margin-top:9px"><a class="text-link" href="${pack.url}" target="_blank" rel="noreferrer">${pack.source}</a>${approval !== "approved" ? `<button class="table-action" data-rule-approve="${pack.id}">Attest</button>` : ""}</div>
+            <div class="button-row" style="margin-top:9px"><a class="text-link" href="${pack.url}" target="_blank" rel="noreferrer">${pack.source}</a>${approval !== "approved" ? `<button class="table-action" data-rule-approve="${pack.id}">Attest</button>` : `<button class="table-action ghost" data-rule-revoke="${pack.id}">${icon("undo")} Undo attest</button>`}</div>
           </article>`;
         }).join("")}
       </div>
@@ -2000,7 +2009,7 @@ function registersView() {
         <table>
           <thead><tr><th>Register</th><th>Current control state</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
           <tbody>
-            ${state.registers.map(([id, name, detail, due, status]) => `<tr><td><div class="table-name">${name}</div><div class="table-meta">${id.toUpperCase()} · statutory register</div></td><td>${detail}</td><td>${due}</td><td><span class="status-pill ${status}">${statusLabel(status)}</span></td><td><button class="table-action" data-register-action="${id}">${status === "action" ? "Send to checker" : "Record verification"}</button></td></tr>`).join("")}
+            ${state.registers.map(([id, name, detail, due, status]) => `<tr><td><div class="table-name">${name}</div><div class="table-meta">${id.toUpperCase()} · statutory register</div></td><td>${detail}</td><td>${due}</td><td><span class="status-pill ${status}">${statusLabel(status)}</span></td><td><div class="button-row"><button class="table-action" data-register-action="${id}">${status === "action" ? "Send to checker" : "Record verification"}</button>${status !== "action" ? `<button class="table-action ghost" data-register-revert="${id}" title="Undo last step">Undo</button>` : ""}</div></td></tr>`).join("")}
           </tbody>
         </table>
       </div>
@@ -2050,7 +2059,7 @@ function approvalsView() {
     <div class="panel">
       <div class="panel-head"><div><h2>Approval queue</h2><p class="panel-subtitle">${pending} items require independent review</p></div><span class="tag">Escalation SLA · 2 days</span></div>
       <div class="table-wrap"><table><thead><tr><th>Item</th><th>Entity</th><th>Maker</th><th>Control area</th><th>Status</th><th></th></tr></thead><tbody>
-        ${state.approvals.map(([id, name, entity, maker, area, status]) => `<tr><td><div class="table-name">${name}</div></td><td>${entity}</td><td>${maker}</td><td><span class="tag">${area}</span></td><td><span class="status-pill ${status === "approved" ? "on-track" : "at-risk"}">${titleCase(status)}</span></td><td>${status === "pending" ? `<button class="table-action" data-approval="${id}" ${canApprove() ? "" : "disabled"}>Approve</button>` : "Completed"}</td></tr>`).join("")}
+        ${state.approvals.map(([id, name, entity, maker, area, status]) => `<tr><td><div class="table-name">${name}</div></td><td>${entity}</td><td>${maker}</td><td><span class="tag">${area}</span></td><td><span class="status-pill ${status === "approved" ? "on-track" : "at-risk"}">${titleCase(status)}</span></td><td>${status === "pending" ? `<button class="table-action" data-approval="${id}" ${canApprove() ? "" : "disabled"}>Approve</button>` : `<button class="table-action ghost" data-approval-revert="${id}" ${canApprove() ? "" : "disabled"} title="Revert approval">${icon("undo")} Revert</button>`}</td></tr>`).join("")}
       </tbody></table></div>
     </div>
     <div class="category-grid" style="margin-top:12px">
@@ -2514,10 +2523,7 @@ function printTrainingCertificate() {
   setToast("Certificate opened for printing.");
 }
 
-function advanceClientOnboarding(id) {
-  const item = state.onboarding.clients.find((client) => client.id === id);
-  if (!item) return;
-  item.progress = Math.min(100, item.progress + 12);
+function applyClientStage(item) {
   if (item.sow === "Accepted" && item.sof === "Accepted" && item.progress >= 82) {
     item.stage = "Activation";
     item.next = "Final checker approval and account activation.";
@@ -2529,9 +2535,30 @@ function advanceClientOnboarding(id) {
     item.next = "Corroborate source of wealth and source of funds evidence.";
   } else {
     item.stage = "CDD evidence";
+    item.next = "Collect identity, ownership, and screening evidence.";
   }
+}
+
+function advanceClientOnboarding(id) {
+  const item = state.onboarding.clients.find((client) => client.id === id);
+  if (!item) return;
+  item.progress = Math.min(100, item.progress + 12);
+  applyClientStage(item);
   addAudit(state.currentRole, `advanced client onboarding for ${item.name}`);
   setToast(`${item.name} onboarding advanced.`);
+}
+
+function reverseClientOnboarding(id) {
+  const item = state.onboarding.clients.find((client) => client.id === id);
+  if (!item) return;
+  if (item.progress <= 0) {
+    setToast(`${item.name} onboarding is already at the start.`);
+    return;
+  }
+  item.progress = Math.max(0, item.progress - 12);
+  applyClientStage(item);
+  addAudit(state.currentRole, `reversed client onboarding for ${item.name}`);
+  setToast(`${item.name} onboarding step reversed.`);
 }
 
 function updateEvidenceGate(id, type) {
@@ -2545,6 +2572,20 @@ function updateEvidenceGate(id, type) {
   if (next === "Accepted") item.progress = Math.min(100, item.progress + 10);
   addAudit(state.currentRole, `updated ${key.toUpperCase()} evidence for ${item.name} to ${next}`);
   setToast(`${key.toUpperCase()} evidence updated to ${next}.`);
+}
+
+function reverseEvidenceGate(id, type) {
+  const item = state.onboarding.clients.find((client) => client.id === id);
+  if (!item) return;
+  const key = type === "sof" ? "sof" : "sow";
+  const flow = ["Requested", "In review", "Accepted"];
+  const current = item[key];
+  if (current === "Accepted") item.progress = Math.max(0, item.progress - 10);
+  const prevIndex = current === "Escalated" ? 0 : Math.max(0, flow.indexOf(current) - 1);
+  const prev = flow[prevIndex] || "Requested";
+  item[key] = prev;
+  addAudit(state.currentRole, `reversed ${key.toUpperCase()} evidence for ${item.name} to ${prev}`);
+  setToast(`${key.toUpperCase()} evidence reversed to ${prev}.`);
 }
 
 function advanceEmployeeOnboarding(id) {
@@ -2561,6 +2602,23 @@ function advanceEmployeeOnboarding(id) {
   item.progress = Math.round((complete / total) * 100);
   addAudit(state.currentRole, `completed ${nextKey} onboarding check for ${item.name}`);
   setToast(`${item.name} onboarding updated.`);
+}
+
+function reverseEmployeeOnboarding(id) {
+  const item = state.onboarding.employees.find((employee) => employee.id === id);
+  if (!item) return;
+  const keys = Object.keys(item.checklist);
+  const lastDone = [...keys].reverse().find((key) => item.checklist[key]);
+  if (!lastDone) {
+    setToast(`${item.name} onboarding has no completed items to undo.`);
+    return;
+  }
+  item.checklist[lastDone] = false;
+  const total = keys.length;
+  const complete = Object.values(item.checklist).filter(Boolean).length;
+  item.progress = Math.round((complete / total) * 100);
+  addAudit(state.currentRole, `reversed ${lastDone} onboarding check for ${item.name}`);
+  setToast(`${item.name} onboarding item reversed.`);
 }
 
 function bindEvents() {
@@ -2609,11 +2667,20 @@ function bindEvents() {
   document.querySelectorAll("[data-advance-client]").forEach((button) => {
     button.addEventListener("click", () => advanceClientOnboarding(button.dataset.advanceClient));
   });
+  document.querySelectorAll("[data-reverse-client]").forEach((button) => {
+    button.addEventListener("click", () => reverseClientOnboarding(button.dataset.reverseClient));
+  });
   document.querySelectorAll("[data-evidence-case]").forEach((button) => {
     button.addEventListener("click", () => updateEvidenceGate(button.dataset.evidenceCase, button.dataset.evidenceType));
   });
+  document.querySelectorAll("[data-reverse-evidence]").forEach((button) => {
+    button.addEventListener("click", () => reverseEvidenceGate(button.dataset.reverseEvidence, button.dataset.evidenceType));
+  });
   document.querySelectorAll("[data-advance-employee]").forEach((button) => {
     button.addEventListener("click", () => advanceEmployeeOnboarding(button.dataset.advanceEmployee));
+  });
+  document.querySelectorAll("[data-reverse-employee]").forEach((button) => {
+    button.addEventListener("click", () => reverseEmployeeOnboarding(button.dataset.reverseEmployee));
   });
   document.querySelectorAll("[data-training-answer]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -2654,6 +2721,13 @@ function bindEvents() {
       setToast("Rule-pack attestation recorded.");
     });
   });
+  document.querySelectorAll("[data-rule-revoke]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.ruleApprovals[button.dataset.ruleRevoke] = "pending";
+      addAudit(state.currentRole, `reset the ${rulePacks.find((pack) => pack.id === button.dataset.ruleRevoke)?.name || "rule"} pack to review`);
+      setToast("Rule-pack attestation reset to review.");
+    });
+  });
   document.querySelectorAll("[data-register-action]").forEach((button) => {
     button.addEventListener("click", () => {
       const item = state.registers.find((register) => register[0] === button.dataset.registerAction);
@@ -2664,6 +2738,24 @@ function bindEvents() {
       setToast(`${item[0].toUpperCase()} control update recorded.`);
     });
   });
+  document.querySelectorAll("[data-register-revert]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const item = state.registers.find((register) => register[0] === button.dataset.registerRevert);
+      if (!item) return;
+      if (item[4] === "on-track") {
+        item[4] = "at-risk";
+        item[2] = "Submitted to checker queue";
+      } else if (item[4] === "at-risk") {
+        item[4] = "action";
+        item[2] = "Returned to maker for action";
+      } else {
+        setToast(`${item[0].toUpperCase()} register is already at the first step.`);
+        return;
+      }
+      addAudit(state.currentRole, `reversed a ${item[0].toUpperCase()} register control update`);
+      setToast(`${item[0].toUpperCase()} control update reversed.`);
+    });
+  });
   document.querySelectorAll("[data-approval]").forEach((button) => {
     button.addEventListener("click", () => {
       if (!canApprove()) return;
@@ -2672,6 +2764,16 @@ function bindEvents() {
       approval[5] = "approved";
       addAudit(state.currentRole, `approved ${approval[1]} for ${approval[2]}`);
       setToast("Independent checker approval recorded.");
+    });
+  });
+  document.querySelectorAll("[data-approval-revert]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!canApprove()) return;
+      const approval = state.approvals.find((item) => item[0] === button.dataset.approvalRevert);
+      if (!approval) return;
+      approval[5] = "pending";
+      addAudit(state.currentRole, `reverted approval for ${approval[1]} (${approval[2]})`);
+      setToast("Checker approval reverted to pending.");
     });
   });
   const searchInput = document.getElementById("global-search");
