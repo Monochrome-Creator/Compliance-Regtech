@@ -654,6 +654,151 @@ const complianceWorkItems = [
   ["ops-bcp", "Operating controls", "BCP and operational resilience", "Track business continuity tests, remote work controls, crisis contacts, and lessons learned.", "Annual", "at-risk", "trm-cyber"],
 ];
 
+const TRAINING_CHECK_DATE = "14 Jun 2026";
+const TRAINING_PASS_MARK = 80;
+const TRAINING_VERSION = "HL-TRM-CYB-2026.1";
+const TRAINING_TITLE = "TRM, Cyber Hygiene, PDPA and Responsible AI Awareness";
+
+const trainingQuiz = [
+  {
+    id: "q1",
+    topic: "PDPA",
+    question: "Which habit best reduces misdirected personal-data incidents?",
+    options: [
+      "Verify recipients and sharing permissions before sending.",
+      "Use shorter emails so mistakes are less visible.",
+      "Archive personal data once a year.",
+      "Send from a personal account if the work account is busy.",
+    ],
+    answer: 0,
+    explain: "Recipient checks and approved sharing channels reduce accidental disclosure risk.",
+  },
+  {
+    id: "q2",
+    topic: "Incident response",
+    question: "When should staff report a suspected data breach?",
+    options: [
+      "After they know every detail and the root cause.",
+      "Immediately through the office reporting channel.",
+      "Only if a client, family member or vendor complains.",
+      "At month end when the compliance report is prepared.",
+    ],
+    answer: 1,
+    explain: "Fast reporting supports containment, evidence capture and notification assessment.",
+  },
+  {
+    id: "q3",
+    topic: "Vendor risk",
+    question: "What should happen before a new vendor handles client or family data?",
+    options: [
+      "A risk, security, contract and data-protection review.",
+      "A verbal approval from the person who wants the tool.",
+      "No review if the vendor is popular in the market.",
+      "A review only after the first incident happens.",
+    ],
+    answer: 0,
+    explain: "Vendor review checks data, security, contract, resilience and exit risks.",
+  },
+  {
+    id: "q4",
+    topic: "Cyber hygiene",
+    question: "What is the safer response to an unexpected MFA prompt?",
+    options: [
+      "Approve it quickly so your account is not locked.",
+      "Do not approve it, change password if needed and report it.",
+      "Share the MFA code with IT by chat.",
+      "Disable MFA for the day and try again later.",
+    ],
+    answer: 1,
+    explain: "Unexpected prompts may mean someone has your password. Do not approve them.",
+  },
+  {
+    id: "q5",
+    topic: "Culture",
+    question: "Why does compliance readiness involve everyone?",
+    options: [
+      "Daily work creates the evidence and the risk.",
+      "Only the DPO handles compliance matters.",
+      "Audits only look at policy documents.",
+      "Compliance applies only to licensed investment staff.",
+    ],
+    answer: 0,
+    explain: "Policies matter, but real readiness comes from everyday behaviour and records.",
+  },
+  {
+    id: "q6",
+    topic: "Confidential documents",
+    question: "Which choice is safest before sending a trust deed and passport copy externally?",
+    options: [
+      "Check the purpose, recipient, approval, channel and minimum data needed.",
+      "Send the full file because external advisers are trusted.",
+      "Forward the last email thread because it is fastest.",
+      "Use any messaging app if the recipient says it is urgent.",
+    ],
+    answer: 0,
+    explain: "Sensitive family-office documents need purpose, recipient and channel checks before sharing.",
+  },
+  {
+    id: "q7",
+    topic: "Access control",
+    question: "A staff member leaves the office. What is the compliance-ready access action?",
+    options: [
+      "Wait until the next quarterly review.",
+      "Remove or suspend access promptly and record completion.",
+      "Keep access open in case handover questions arise.",
+      "Ask the former staff member not to log in.",
+    ],
+    answer: 1,
+    explain: "Leaver access should be removed quickly and evidenced to reduce data and cyber risk.",
+  },
+  {
+    id: "q8",
+    topic: "Responsible AI",
+    question: "Which statement about public AI tools is safest for staff?",
+    options: [
+      "They can be used for any data if the answer is useful.",
+      "They are safe if the prompt is deleted afterwards.",
+      "They should not receive client, family or confidential data unless approved.",
+      "They are outside compliance because they are not office systems.",
+    ],
+    answer: 2,
+    explain: "Public AI tools can create data disclosure and vendor risks when used with confidential or personal data.",
+  },
+  {
+    id: "q9",
+    topic: "Resilience",
+    question: "What should staff do during an outage of a critical work system?",
+    options: [
+      "Use the approved continuity workaround and inform the service owner.",
+      "Move files to personal storage until the system returns.",
+      "Stop recording work because the system is unavailable.",
+      "Keep retrying silently so no one is disturbed.",
+    ],
+    answer: 0,
+    explain: "Continuity procedures keep work controlled and protect confidentiality during disruptions.",
+  },
+  {
+    id: "q10",
+    topic: "Audit evidence",
+    question: "Which action best supports MAS and PDPA audit readiness?",
+    options: [
+      "Tell auditors that staff know the process.",
+      "Keep evidence of training, reviews, incidents, approvals and exceptions.",
+      "Use fewer systems so there is less to explain.",
+      "Ask vendors to confirm controls only after an audit starts.",
+    ],
+    answer: 1,
+    explain: "Audit readiness depends on reliable evidence that controls are understood and operating.",
+  },
+];
+
+const trainingSources = [
+  ["MAS TRM", "Technology Risk Management Guidelines", "Technology governance, cyber resilience and third-party technology risk.", "https://www.mas.gov.sg/regulation/guidelines/technology-risk-management-guidelines"],
+  ["MAS", "Notice FSM-N22 on Cyber Hygiene", "Administrative accounts, patching, malware protection, perimeter controls and MFA.", "https://www.mas.gov.sg/regulation/notices/notice-fsm-n22"],
+  ["PDPC", "Data breach reporting", "Breach assessment, reporting route and notification considerations.", "https://www.pdpc.gov.sg/organisations/e-services/report-your-organisations-data-breach"],
+  ["PDPC", "PDPA key concepts", "Protection, retention, transfer limitation, accountability and DPO duties.", "https://www.pdpc.gov.sg/guidelines-and-consultation/2020/03/advisory-guidelines-on-key-concepts-in-the-pdpa"],
+];
+
 const defaultPersisted = {
   theme: "light",
   workspace: "all",
@@ -716,6 +861,17 @@ const defaultPersisted = {
       checklist: { ...item.checklist },
     })),
   },
+  training: {
+    learnerName: "Sarah Lim",
+    learnerRole: "Operations analyst",
+    companyName: "Meridian Family Office",
+    complianceOfficer: "Compliance lead",
+    answers: {},
+    submitted: false,
+    certificateId: "",
+    completedAt: "",
+    attempts: [],
+  },
 };
 
 const STORAGE_KEY = "harbourline-demo-v2";
@@ -738,6 +894,12 @@ function loadPersisted() {
       onboarding: {
         clients: saved.onboarding?.clients || defaultPersisted.onboarding.clients,
         employees: saved.onboarding?.employees || defaultPersisted.onboarding.employees,
+      },
+      training: {
+        ...defaultPersisted.training,
+        ...(saved.training || {}),
+        answers: saved.training?.answers || defaultPersisted.training.answers,
+        attempts: saved.training?.attempts || defaultPersisted.training.attempts,
       },
     };
     const legacyRoleMarker = ["so", "lo"].join("");
@@ -820,6 +982,7 @@ const state = {
   calc: persisted.calc,
   toggles: persisted.toggles,
   onboarding: persisted.onboarding,
+  training: persisted.training,
 };
 
 const navGroups = [
@@ -846,6 +1009,7 @@ const navGroups = [
     label: "Risk & privacy",
     items: [
       ["trm-cyber", "lock", "TRM & cyber", "Systems and access"],
+      ["training", "checkCircle", "Training quiz", "TRM cyber attestation"],
       ["ewra", "trendingUp", "EWRA", "Environmental risk"],
       ["privacy", "lock", "PDPA / DPO", "Privacy controls"],
       ["settings", "settings", "Settings", "Workspace preferences"],
@@ -878,6 +1042,15 @@ function evidenceStatus(status) {
   return `<span class="status-pill ${statusClass(status)}">${status}</span>`;
 }
 
+function esc(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function savePersisted() {
   localStorage.setItem(
     STORAGE_KEY,
@@ -898,6 +1071,7 @@ function savePersisted() {
       calc: state.calc,
       toggles: state.toggles,
       onboarding: state.onboarding,
+      training: state.training,
     }),
   );
 }
@@ -983,6 +1157,50 @@ function readiness() {
   return { checks, passed: checks.filter(([, pass]) => pass).length, minimumDeployment };
 }
 
+function todayIso() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function makeTrainingEvidenceId() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let index = 0; index < 5; index += 1) code += chars[Math.floor(Math.random() * chars.length)];
+  return `HL-TRAIN-${new Date().getFullYear()}-${code}`;
+}
+
+function trainingAnswered() {
+  return trainingQuiz.filter((item) => state.training.answers[item.id] !== undefined).length;
+}
+
+function trainingCorrect() {
+  return trainingQuiz.filter((item) => Number(state.training.answers[item.id]) === item.answer).length;
+}
+
+function trainingPercent() {
+  return Math.round((trainingCorrect() / trainingQuiz.length) * 100);
+}
+
+function trainingPassed() {
+  return state.training.submitted && trainingPercent() >= TRAINING_PASS_MARK;
+}
+
+function trainingStatusLabel() {
+  if (!state.training.submitted) return "Draft";
+  return trainingPassed() ? "Passed" : "Review required";
+}
+
+function trainingOptionClass(item, optionIndex) {
+  const selected = Number(state.training.answers[item.id]) === optionIndex;
+  if (!state.training.submitted) return selected ? "selected" : "";
+  if (optionIndex === item.answer) return "correct";
+  if (selected) return "wrong";
+  return "";
+}
+
 function addAudit(actor, action) {
   state.activities.unshift(["activity", actor, action, "Just now"]);
 }
@@ -1030,7 +1248,7 @@ function searchResults() {
     ...matchedClients.map((item) => `<button class="search-result" data-review="${item.id}"><span class="result-icon">${icon("users")}</span><span><span class="result-name">${item.name}</span><span class="result-meta">${item.type} · ${item.category}</span></span></button>`),
     ...matchedVccs.map((item) => `<button class="search-result" data-view="vccs"><span class="result-icon">${icon("landmark")}</span><span><span class="result-name">${item.name}</span><span class="result-meta">${item.type} · ${item.subFunds.length} sub-funds</span></span></button>`),
     ...matchedControls.map((item) => `<button class="search-result" data-view="${item[6]}"><span class="result-icon">${icon("checkCircle")}</span><span><span class="result-name">${item[2]}</span><span class="result-meta">${item[1]} · ${statusLabel(item[5])}</span></span></button>`),
-    ...matchedObligations.map((item) => `<button class="search-result" data-action="show-obligations"><span class="result-icon">${icon("checkCircle")}</span><span><span class="result-name">${item.name}</span><span class="result-meta">${item.group} · ${statusLabel(item.status)}</span></span></button>`),
+    ...matchedObligations.map((item) => `<button class="search-result" data-action="show-obligations"><span class="result-icon">${icon("checkCircle")}</span><span><span class="result-name">${esc(item.name)}</span><span class="result-meta">${esc(item.group)} · ${statusLabel(item.status)}</span></span></button>`),
   ];
   return `<div class="search-results">${rows.length ? rows.join("") : `<div class="queue-empty">No matching records found.</div>`}</div>`;
 }
@@ -1044,6 +1262,7 @@ function sidebar() {
     if (id === "workbench") return complianceWorkItems.filter((item) => item[5] !== "on-track").length;
     if (id === "obligations") return complianceWorkItems.filter((item) => item[1] === "MAS / SFA" && item[5] !== "on-track").length;
     if (id === "trm-cyber") return complianceWorkItems.filter((item) => ["tech-trm", "tech-cyber", "ops-bcp"].includes(item[0]) && item[5] !== "on-track").length;
+    if (id === "training") return trainingPassed() ? null : 1;
     if (id === "client-onboarding") return state.onboarding.clients.filter((item) => item.progress < 100).length;
     if (id === "employee-onboarding") return state.onboarding.employees.filter((item) => item.progress < 100).length;
     if (id === "vccs") return visibleVccStructures().reduce((total, item) => total + item.subFunds.length, 0);
@@ -1277,17 +1496,10 @@ function overview() {
       <div class="hero-copy">
         <span class="tag">Today’s operating picture</span>
         <h2>Start with the items that block onboarding, filings, or risk acceptance.</h2>
-        <p>The dashboard prioritises evidence gaps, SOW/SOF decisions, regulatory controls, and fund-structure actions without adding unnecessary departmental modules.</p>
-        <div class="hero-actions">
-          <button class="primary-button" data-view="workbench">${icon("checkCircle")} Open control register</button>
-          <button class="secondary-button" data-view="client-onboarding">${icon("userCheck")} Review onboarding</button>
-        </div>
       </div>
-      <div class="hero-metrics">
-        <div class="hero-metric"><span>Action controls</span><strong>${workSummary.action}</strong><small>${workSummary.atRisk} more at risk</small></div>
-        <div class="hero-metric"><span>SOW/SOF gaps</span><strong>${sowSofGaps.length}</strong><small>hard gates before activation</small></div>
-        <div class="hero-metric"><span>Open onboarding</span><strong>${activeClientOnboarding.length}</strong><small>client cases in progress</small></div>
-        <div class="hero-metric"><span>VCC records</span><strong>${vccCount || "0"}</strong><small>umbrella and sub-funds</small></div>
+      <div class="hero-actions">
+        <button class="primary-button" data-view="workbench">${icon("checkCircle")} Open control register</button>
+        <button class="secondary-button" data-view="client-onboarding">${icon("userCheck")} Review onboarding</button>
       </div>
     </section>
     <div class="stat-grid">
@@ -1590,7 +1802,7 @@ function obligationsView() {
       </div>
       <div class="panel">
         <div class="panel-head"><div><h2>Existing MAS/SFA workflow tasks</h2><p class="panel-subtitle">User-created and seeded tasks remain here</p></div><span class="tag">${allObligations().length} tasks</span></div>
-        <div class="obligation-list">${allObligations().slice(0, 6).map((item) => `<div class="obligation-row"><div><div class="obligation-name">${item.name}</div><div class="obligation-desc">${item.description}</div></div><span class="status-pill ${item.status}">${statusLabel(item.status)}</span></div>`).join("")}</div>
+        <div class="obligation-list">${allObligations().slice(0, 6).map((item) => `<div class="obligation-row"><div><div class="obligation-name">${esc(item.name)}</div><div class="obligation-desc">${esc(item.description)}</div></div><span class="status-pill ${item.status}">${statusLabel(item.status)}</span></div>`).join("")}</div>
       </div>
     </div>
   `;
@@ -1620,6 +1832,79 @@ function trmCyberView() {
         <div class="control-matrix compact-control-matrix">${cyberHygieneControls.map(([name, detail, status, evidence]) => `<article class="control-card"><div class="category-head"><h3>${name}</h3><span class="status-pill ${status}">${statusLabel(status)}</span></div><p>${detail}</p><div class="evidence-row"><span>Evidence</span><small>${evidence}</small></div><button class="table-action" data-control-task="${name} cyber hygiene control">Update</button></article>`).join("")}</div>
       </div>
     </div>
+  `;
+}
+
+function trainingView() {
+  const statusClassName = !state.training.submitted ? "at-risk" : trainingPassed() ? "on-track" : "action";
+  const evidenceId = state.training.certificateId || "Not issued";
+  return `
+    ${pageHead("Training quiz", "Staff TRM, cyber hygiene, PDPA and responsible AI awareness attestation with saved score evidence.", `<button class="secondary-button" data-action="export-training">${icon("download")} Export training evidence</button>`)}
+    <div class="notice">${icon("checkCircle")} This module turns awareness training into audit evidence: staff details, pass mark, scored MCQ answers, attempt history and source basis are kept together.</div>
+    <div class="stat-grid">
+      ${statCard("Score", state.training.submitted ? `${trainingPercent()}%` : `${trainingAnswered()} / ${trainingQuiz.length}`, state.training.submitted ? `${trainingCorrect()} correct answers` : "Answered questions", "checkCircle", "training")}
+      ${statCard("Pass mark", `${TRAINING_PASS_MARK}%`, trainingPassed() ? "Passed" : "Required", "shield", "training")}
+      ${statCard("Status", trainingStatusLabel(), state.training.completedAt || "Not completed", "activity", "training")}
+      ${statCard("Evidence ID", evidenceId, TRAINING_VERSION, "fileText", "training")}
+      ${statCard("Attempts", state.training.attempts.length, `Checked ${TRAINING_CHECK_DATE}`, "clock", "training")}
+    </div>
+    <div class="training-layout">
+      <section class="panel training-panel">
+        <div class="panel-head"><div><h2>Attestation details</h2><p class="panel-subtitle">These values appear in the exported training evidence pack</p></div><span class="status-pill ${statusClassName}">${trainingStatusLabel()}</span></div>
+        <div class="training-form">
+          <div class="form-field"><label for="training-learner">Learner name</label><input id="training-learner" data-training-field="learnerName" value="${esc(state.training.learnerName)}" /></div>
+          <div class="form-field"><label for="training-role">Role / team</label><input id="training-role" data-training-field="learnerRole" value="${esc(state.training.learnerRole)}" /></div>
+          <div class="form-field"><label for="training-company">Company / family office</label><input id="training-company" data-training-field="companyName" value="${esc(state.training.companyName)}" /></div>
+          <div class="form-field"><label for="training-officer">Compliance owner</label><input id="training-officer" data-training-field="complianceOfficer" value="${esc(state.training.complianceOfficer)}" /></div>
+        </div>
+        <div class="training-summary ${state.training.submitted ? (trainingPassed() ? "passed" : "failed") : ""}">
+          <div>
+            <span class="eyebrow">${state.training.submitted ? "Submitted result" : "Draft attempt"}</span>
+            <strong>${state.training.submitted ? `${trainingPercent()}%` : `${trainingAnswered()} of ${trainingQuiz.length}`}</strong>
+            <p>${state.training.submitted ? (trainingPassed() ? "Training passed. Export the evidence pack for the audit file." : "Review required. Clear or change answers, then submit a new attempt.") : "Answer all MCQs, then submit for scoring."}</p>
+          </div>
+          <div class="score-ring"><span>${TRAINING_PASS_MARK}%</span><small>Pass mark</small></div>
+        </div>
+        <div class="button-row training-actions">
+          <button class="primary-button" data-action="submit-training">${icon("checkCircle")} Submit quiz</button>
+          <button class="secondary-button" data-action="clear-training">${icon("x")} Clear answers</button>
+          <button class="secondary-button" data-action="export-training">${icon("download")} Export evidence</button>
+          <button class="secondary-button" data-action="print-training"${trainingPassed() ? "" : " disabled"}>${icon("fileText")} Print certificate</button>
+        </div>
+      </section>
+      <section class="panel training-panel">
+        <div class="panel-head"><div><h2>Evidence basis</h2><p class="panel-subtitle">Reference sources used for the awareness test</p></div><span class="tag">Singapore sources</span></div>
+        <div class="source-stack">
+          ${trainingSources.map(([agency, title, note, url]) => `<article class="training-source"><span class="tag">${agency}</span><h3>${title}</h3><p>${note}</p><a class="text-link" href="${url}" target="_blank" rel="noreferrer">Open source</a></article>`).join("")}
+        </div>
+      </section>
+    </div>
+    <section class="panel view-panel training-questions-panel">
+      <div class="panel-head"><div><h2>Scored MCQs</h2><p class="panel-subtitle">Four answer choices per question. Explanations show after submission.</p></div><span class="tag">${trainingQuiz.length} questions</span></div>
+      <div class="quiz-list">
+        ${trainingQuiz.map((item, itemIndex) => `
+          <article class="quiz-card">
+            <div class="quiz-card-head"><span class="tag">${item.topic}</span><span class="tiny-label">Question ${itemIndex + 1}</span></div>
+            <h3>${item.question}</h3>
+            <div class="option-list">
+              ${item.options.map((option, optionIndex) => `
+                <button class="${trainingOptionClass(item, optionIndex)}" data-training-answer="${item.id}" data-answer="${optionIndex}">
+                  <span>${String.fromCharCode(65 + optionIndex)}</span>
+                  <strong>${option}</strong>
+                </button>
+              `).join("")}
+            </div>
+            ${state.training.submitted ? `<div class="feedback ${Number(state.training.answers[item.id]) === item.answer ? "correct" : "wrong"}"><strong>${Number(state.training.answers[item.id]) === item.answer ? "Correct" : state.training.answers[item.id] === undefined ? "Unanswered" : "Review this"}</strong><p>${item.explain}</p></div>` : ""}
+          </article>
+        `).join("")}
+      </div>
+    </section>
+    <section class="panel view-panel">
+      <div class="panel-head"><div><h2>Attempt history</h2><p class="panel-subtitle">Browser-saved demo history for audit-trail storytelling</p></div><span class="tag">${state.training.attempts.length} records</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Attempt</th><th>Date</th><th>Learner</th><th>Score</th><th>Status</th><th>Evidence ID</th></tr></thead><tbody>
+        ${state.training.attempts.length ? state.training.attempts.map((attempt, index) => `<tr><td><div class="table-name">Attempt ${state.training.attempts.length - index}</div></td><td>${attempt.date}</td><td>${esc(attempt.learner)}</td><td>${attempt.score}%</td><td><span class="status-pill ${attempt.passed ? "on-track" : "action"}">${attempt.passed ? "Passed" : "Review required"}</span></td><td>${attempt.evidenceId || "Not issued"}</td></tr>`).join("") : `<tr><td colspan="6"><div class="queue-empty">No submitted attempts yet.</div></td></tr>`}
+      </tbody></table></div>
+    </section>
   `;
 }
 
@@ -1797,7 +2082,7 @@ function privacyView() {
       </div>
       <div class="panel">
         <div class="panel-head"><div><h2>Breach-response tracker</h2><p class="panel-subtitle">Assessment, notification, and remediation history</p></div><span class="tag">${state.incidents.length} records</span></div>
-        <div class="audit-list compact-audit">${state.incidents.map(([, name, type, status, date, note]) => `<div class="audit-row"><span class="audit-icon">${icon(status === "Closed" ? "checkCircle" : "alertCircle")}</span><div class="audit-text"><strong>${name}</strong><br />${type} · ${note}</div><div class="audit-time">${date}</div></div>`).join("")}</div>
+        <div class="audit-list compact-audit">${state.incidents.map(([, name, type, status, date, note]) => `<div class="audit-row"><span class="audit-icon">${icon(status === "Closed" ? "checkCircle" : "alertCircle")}</span><div class="audit-text"><strong>${esc(name)}</strong><br />${esc(type)} · ${esc(note)}</div><div class="audit-time">${esc(date)}</div></div>`).join("")}</div>
       </div>
     </div>
   `;
@@ -1863,7 +2148,7 @@ function auditView() {
     <div class="panel view-panel">
       <div class="toolbar"><span class="tag">Last 7 days</span><span class="tag">All activity</span><div class="toolbar-spacer"></div><button class="secondary-button">${icon("filter")} Filter</button></div>
       <div class="audit-list">
-        ${state.activities.map(([iconName, actor, action, time]) => `<div class="audit-row"><span class="audit-icon">${icon(iconName)}</span><div class="audit-text"><strong>${actor}</strong> ${action}</div><div class="audit-time">${time}</div></div>`).join("")}
+        ${state.activities.map(([iconName, actor, action, time]) => `<div class="audit-row"><span class="audit-icon">${icon(iconName)}</span><div class="audit-text"><strong>${esc(actor)}</strong> ${esc(action)}</div><div class="audit-time">${esc(time)}</div></div>`).join("")}
       </div>
     </div>
   `;
@@ -1899,6 +2184,7 @@ function renderMain() {
     "mas-trm": masTrmView,
     "cyber-hygiene": cyberHygieneView,
     "trm-cyber": trmCyberView,
+    training: trainingView,
     ewra: ewraView,
     clients: clientsView,
     vccs: vccsView,
@@ -2116,6 +2402,118 @@ function downloadPack(title) {
   setToast(`${title} generated.`);
 }
 
+function exportTrainingEvidence() {
+  const training = state.training;
+  const body = [
+    "HARBOURLINE TRAINING ATTESTATION EVIDENCE",
+    TRAINING_TITLE.toUpperCase(),
+    "",
+    `Training version: ${TRAINING_VERSION}`,
+    `Source review date: ${TRAINING_CHECK_DATE}`,
+    `Workspace: ${workspaceLabel()}`,
+    `Generated: ${todayIso()}`,
+    "",
+    "LEARNER",
+    `Name: ${training.learnerName || "Not recorded"}`,
+    `Role / team: ${training.learnerRole || "Not recorded"}`,
+    `Company / family office: ${training.companyName || "Not recorded"}`,
+    `Compliance owner: ${training.complianceOfficer || "Not recorded"}`,
+    "",
+    "RESULT",
+    `Status: ${trainingStatusLabel()}`,
+    `Score: ${training.submitted ? `${trainingPercent()}%` : "Not submitted"}`,
+    `Correct answers: ${training.submitted ? `${trainingCorrect()} / ${trainingQuiz.length}` : "Not submitted"}`,
+    `Pass mark: ${TRAINING_PASS_MARK}%`,
+    `Completed date: ${training.completedAt || "Not completed"}`,
+    `Evidence ID: ${training.certificateId || "Not issued"}`,
+    "",
+    "QUESTION RESULTS",
+    ...trainingQuiz.map((item, index) => {
+      const selectedIndex = training.answers[item.id];
+      const selected = selectedIndex === undefined ? "Unanswered" : item.options[selectedIndex];
+      const correct = item.options[item.answer];
+      const result = Number(selectedIndex) === item.answer ? "Correct" : "Review";
+      return `${index + 1}. ${item.topic} | ${result} | Selected: ${selected} | Correct: ${correct}`;
+    }),
+    "",
+    "ATTEMPT HISTORY",
+    ...(training.attempts.length ? training.attempts.map((attempt) => `- ${attempt.date}: ${attempt.score}% · ${attempt.passed ? "Passed" : "Review required"} · ${attempt.evidenceId || "No evidence ID"}`) : ["No submitted attempts."]),
+    "",
+    "SOURCE BASIS",
+    ...trainingSources.map(([agency, title, note, url]) => `- ${agency}: ${title} | ${note} | ${url}`),
+    "",
+    "Demo boundary: browser-saved prototype evidence. Production audit use requires server-side identity, immutable logs, evidence storage and reviewer sign-off.",
+  ].join("\n");
+  downloadText(body, "harbourline-training-attestation-evidence.txt");
+  setToast("Training evidence pack exported.");
+}
+
+function printTrainingCertificate() {
+  if (!trainingPassed()) {
+    setToast(`Pass the quiz (${TRAINING_PASS_MARK}% or higher) to issue a certificate.`);
+    return;
+  }
+  const training = state.training;
+  const win = window.open("", "_blank", "noopener,noreferrer,width=900,height=700");
+  if (!win) {
+    setToast("Allow pop-ups to print the certificate.");
+    return;
+  }
+  const html = `<!doctype html>
+<html lang="en"><head><meta charset="UTF-8" />
+<title>Harbourline training certificate</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"DM Sans",Arial,sans-serif;background:#eef1ee;color:#1c241f;padding:40px}
+  .cert{max-width:760px;margin:0 auto;background:#fff;border:2px solid #2f3e34;border-radius:18px;padding:56px 60px;position:relative}
+  .cert::before{content:"";position:absolute;inset:14px;border:1px solid #c4cfc6;border-radius:12px;pointer-events:none}
+  .mark{width:46px;height:46px;border-radius:12px;background:#2f3e34;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;font-family:"Manrope",Arial,sans-serif}
+  .eyebrow{letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:#5f6d63;margin-top:22px}
+  h1{font-family:"Manrope",Arial,sans-serif;font-size:34px;margin:6px 0 4px}
+  .course{font-size:18px;font-weight:600;margin:18px 0 28px;color:#384a3e}
+  .name{font-size:30px;font-weight:800;border-bottom:1px solid #d4ddd6;padding-bottom:10px;margin-bottom:8px}
+  .sub{color:#5f6d63;font-size:15px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin:30px 0}
+  .grid div span{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#7c8a80}
+  .grid div strong{font-size:16px}
+  .result{display:inline-block;background:#e7f0e8;color:#27502f;border-radius:999px;padding:6px 16px;font-weight:700;font-size:14px}
+  .foot{margin-top:34px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .sign{flex:1}
+  .sign .line{border-top:1px solid #2f3e34;margin-top:42px;padding-top:6px;font-size:13px;color:#5f6d63}
+  .note{margin-top:26px;font-size:11px;color:#8a958c;line-height:1.5}
+  @media print{body{background:#fff;padding:0}.cert{border:none}.cert::before{display:none}}
+</style></head>
+<body>
+  <div class="cert">
+    <div class="mark">H</div>
+    <div class="eyebrow">Harbourline Family Office Governance</div>
+    <h1>Certificate of Completion</h1>
+    <div class="course">${esc(TRAINING_TITLE)}</div>
+    <div class="eyebrow">This certifies that</div>
+    <div class="name">${esc(training.learnerName || "Not recorded")}</div>
+    <div class="sub">${esc(training.learnerRole || "Role not recorded")} &middot; ${esc(training.companyName || "Company not recorded")}</div>
+    <div class="grid">
+      <div><span>Result</span><strong><span class="result">Passed &middot; ${trainingPercent()}%</span></strong></div>
+      <div><span>Pass mark</span><strong>${TRAINING_PASS_MARK}%</strong></div>
+      <div><span>Completed</span><strong>${esc(training.completedAt || todayIso())}</strong></div>
+      <div><span>Evidence ID</span><strong>${esc(training.certificateId || "Not issued")}</strong></div>
+      <div><span>Training version</span><strong>${esc(TRAINING_VERSION)}</strong></div>
+      <div><span>Source review date</span><strong>${esc(TRAINING_CHECK_DATE)}</strong></div>
+    </div>
+    <div class="foot">
+      <div class="sign"><div class="line">${esc(training.complianceOfficer || "Compliance owner")}<br />Compliance owner</div></div>
+      <div class="sign"><div class="line">${esc(workspaceLabel())}<br />Workspace</div></div>
+    </div>
+    <div class="note">Demo certificate generated from a browser-saved prototype. Production audit use requires server-side identity, immutable logs, evidence storage and reviewer sign-off. Basis: MAS TRM, MAS Notice FSM-N22 (Cyber Hygiene), and PDPC PDPA guidance.</div>
+  </div>
+  <script>window.onload=function(){window.print();};<\/script>
+</body></html>`;
+  win.document.write(html);
+  win.document.close();
+  addAudit(state.currentRole, `printed training certificate ${training.certificateId || ""}`.trim());
+  setToast("Certificate opened for printing.");
+}
+
 function advanceClientOnboarding(id) {
   const item = state.onboarding.clients.find((client) => client.id === id);
   if (!item) return;
@@ -2216,6 +2614,24 @@ function bindEvents() {
   });
   document.querySelectorAll("[data-advance-employee]").forEach((button) => {
     button.addEventListener("click", () => advanceEmployeeOnboarding(button.dataset.advanceEmployee));
+  });
+  document.querySelectorAll("[data-training-answer]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.training.answers[button.dataset.trainingAnswer] = Number(button.dataset.answer);
+      if (state.training.submitted) {
+        state.training.submitted = false;
+        state.training.certificateId = "";
+        state.training.completedAt = "";
+      }
+      savePersisted();
+      render();
+    });
+  });
+  document.querySelectorAll("[data-training-field]").forEach((input) => {
+    input.addEventListener("input", () => {
+      state.training[input.dataset.trainingField] = input.value;
+      savePersisted();
+    });
   });
   document.querySelectorAll("[data-heat]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -2320,6 +2736,36 @@ function bindEvents() {
         setToast("Board compliance pack generated and logged.");
       }
       if (action === "download-pack") downloadPack(button.dataset.pack || "Compliance report");
+      if (action === "submit-training") {
+        if (trainingAnswered() < trainingQuiz.length) {
+          setToast(`Answer all ${trainingQuiz.length} questions before submitting.`);
+          return;
+        }
+        state.training.submitted = true;
+        const passed = trainingPassed();
+        state.training.completedAt = passed ? todayIso() : "";
+        state.training.certificateId = passed ? state.training.certificateId || makeTrainingEvidenceId() : "";
+        state.training.attempts.unshift({
+          date: todayIso(),
+          learner: state.training.learnerName || "Not recorded",
+          score: trainingPercent(),
+          passed,
+          evidenceId: state.training.certificateId,
+        });
+        state.training.attempts = state.training.attempts.slice(0, 8);
+        addAudit(state.currentRole, `submitted ${TRAINING_TITLE} quiz with ${trainingPercent()}% (${passed ? "passed" : "review required"})`);
+        setToast(passed ? "Training quiz passed and evidence ID issued." : "Training quiz submitted. Review required.");
+      }
+      if (action === "clear-training") {
+        state.training.answers = {};
+        state.training.submitted = false;
+        state.training.certificateId = "";
+        state.training.completedAt = "";
+        addAudit(state.currentRole, "cleared the training quiz answers");
+        setToast("Training quiz answers cleared.");
+      }
+      if (action === "export-training") exportTrainingEvidence();
+      if (action === "print-training") printTrainingCertificate();
       if (action === "lock-session") {
         state.locked = true;
         savePersisted();

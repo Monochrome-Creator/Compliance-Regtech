@@ -1095,89 +1095,46 @@ button.heat-cell:hover {
 }
 
 .overview-hero {
+  align-items: center;
   background:
-    radial-gradient(circle at top right, rgba(191, 220, 121, 0.25), transparent 34%),
+    radial-gradient(circle at top right, rgba(191, 220, 121, 0.22), transparent 38%),
     linear-gradient(135deg, var(--paper), var(--ink-50));
   border: var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  display: grid;
+  display: flex;
   gap: 18px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(420px, 0.8fr);
-  margin-bottom: 14px;
+  justify-content: space-between;
+  margin-bottom: 12px;
   overflow: hidden;
-  padding: 18px;
+  padding: 13px 16px;
 }
 
 .hero-copy {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-width: 0;
 }
 
 .hero-copy .tag {
-  align-self: flex-start;
+  align-self: center;
 }
 
 .hero-copy h2 {
   color: var(--ink-950);
-  font-size: 22px;
-  letter-spacing: -0.7px;
-  line-height: 1.16;
-  margin-top: 12px;
-  max-width: 620px;
-}
-
-.hero-copy p {
-  color: var(--ink-600);
-  font-size: 12px;
-  line-height: 1.65;
-  margin-top: 8px;
-  max-width: 650px;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+  max-width: 640px;
 }
 
 .hero-actions {
   display: flex;
+  flex-shrink: 0;
   flex-wrap: wrap;
   gap: 9px;
-  margin-top: 16px;
-}
-
-.hero-metrics {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.hero-metric {
-  background: color-mix(in srgb, var(--paper) 82%, transparent);
-  border: var(--line);
-  border-radius: 13px;
-  padding: 14px;
-}
-
-.hero-metric span,
-.hero-metric small {
-  color: var(--ink-500);
-  display: block;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.hero-metric strong {
-  color: var(--ink-950);
-  display: block;
-  font-family: "Manrope", sans-serif;
-  font-size: 26px;
-  letter-spacing: -0.8px;
-  margin: 7px 0 4px;
-}
-
-.hero-metric small {
-  font-weight: 600;
-  line-height: 1.35;
-  text-transform: none;
 }
 
 .dashboard-focus-grid {
@@ -2239,6 +2196,233 @@ tr:hover td {
   width: 15px;
 }
 
+.training-layout {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  margin-bottom: 12px;
+}
+
+.training-panel {
+  padding: 14px;
+}
+
+.training-form {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.training-summary {
+  align-items: center;
+  background: var(--ink-50);
+  border: var(--line);
+  border-radius: 8px;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 13px;
+}
+
+.training-summary strong {
+  color: var(--ink-950);
+  display: block;
+  font-family: "Manrope", sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  margin: 5px 0;
+}
+
+.training-summary.passed {
+  background: var(--teal-soft);
+  border-color: color-mix(in srgb, var(--teal) 28%, transparent);
+}
+
+.training-summary.failed {
+  background: var(--coral-soft);
+  border-color: color-mix(in srgb, var(--coral) 28%, transparent);
+}
+
+.score-ring {
+  align-items: center;
+  aspect-ratio: 1;
+  background: var(--paper);
+  border: 6px solid var(--lime);
+  border-radius: 50%;
+  color: var(--ink-800);
+  display: flex;
+  flex: 0 0 88px;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.score-ring span {
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.score-ring small {
+  color: var(--ink-500);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.training-actions {
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.source-stack {
+  display: grid;
+  gap: 8px;
+}
+
+.training-source {
+  border: var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.training-source h3 {
+  color: var(--ink-900);
+  font-size: 12px;
+  margin: 7px 0 5px;
+}
+
+.training-source p {
+  color: var(--ink-500);
+  font-size: 10px;
+  line-height: 1.5;
+  margin-bottom: 7px;
+}
+
+.training-questions-panel {
+  margin-bottom: 12px;
+}
+
+.quiz-list {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quiz-card {
+  border: var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.quiz-card-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.quiz-card h3 {
+  color: var(--ink-950);
+  font-size: 13px;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.option-list {
+  display: grid;
+  gap: 7px;
+}
+
+.option-list button {
+  align-items: flex-start;
+  background: var(--paper);
+  border: var(--line);
+  border-radius: 8px;
+  color: var(--ink-700);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  min-height: 44px;
+  padding: 9px;
+  text-align: left;
+}
+
+.option-list button:hover {
+  background: var(--ink-50);
+}
+
+.option-list button > span {
+  align-items: center;
+  background: var(--ink-50);
+  border-radius: 6px;
+  color: var(--ink-600);
+  display: flex;
+  font-size: 10px;
+  font-weight: 800;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.option-list button > strong {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.option-list button.selected {
+  background: var(--active-bg);
+  border-color: color-mix(in srgb, var(--active-text) 30%, transparent);
+  color: var(--ink-900);
+}
+
+.option-list button.correct {
+  background: var(--teal-soft);
+  border-color: color-mix(in srgb, var(--teal) 38%, transparent);
+}
+
+.option-list button.correct > span {
+  background: var(--teal);
+  color: white;
+}
+
+.option-list button.wrong {
+  background: var(--coral-soft);
+  border-color: color-mix(in srgb, var(--coral) 35%, transparent);
+}
+
+.option-list button.wrong > span {
+  background: var(--coral);
+  color: white;
+}
+
+.feedback {
+  border-radius: 8px;
+  font-size: 10px;
+  margin-top: 9px;
+  padding: 9px;
+}
+
+.feedback.correct {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.feedback.wrong {
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+
+.feedback strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.feedback p {
+  color: inherit;
+  font-size: 10px;
+}
+
 .settings-grid {
   display: grid;
   gap: 12px;
@@ -2688,6 +2872,7 @@ tr:hover td {
   .tracker-grid,
   .rules-layout,
   .dashboard-focus-grid,
+  .training-layout,
   .overview-hero {
     grid-template-columns: 1fr;
   }
@@ -2702,6 +2887,7 @@ tr:hover td {
   }
 
   .risk-register-grid,
+  .quiz-list,
   .vcc-detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2750,6 +2936,8 @@ tr:hover td {
   .control-matrix,
   .gate-grid,
   .risk-register-grid,
+  .quiz-list,
+  .training-form,
   .subfund-grid,
   .vcc-detail-grid,
   .work-item-grid,
