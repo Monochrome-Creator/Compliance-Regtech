@@ -838,6 +838,11 @@ const defaultPersisted = {
   incidents: [
     ["i1", "Quarterly access review", "Control test", "Closed", "28 May 2026", "No exceptions identified"],
   ],
+  strReports: [
+    ["str-4417", "Aurelia Family Holdings", "Unusual third-party inflow", "Marcus Goh", "21 May 2026", "Filed (STRO)", "SONAR-2026-004417"],
+    ["str-4421", "Tan Heritage Trust", "Source-of-funds inconsistency", "Sarah Lim", "28 May 2026", "MLRO review", "—"],
+    ["str-4409", "Straits Horizon VCC", "Sanctions / adverse media hit", "Jia Wei", "12 May 2026", "No-file (documented)", "Rationale logged"],
+  ],
   activities: audits.map((item) => [...item]),
   calc: {
     scheme: "13U",
@@ -889,6 +894,7 @@ function loadPersisted() {
       registers: saved.registers || defaultPersisted.registers,
       approvals: saved.approvals || defaultPersisted.approvals,
       incidents: saved.incidents || defaultPersisted.incidents,
+      strReports: saved.strReports || defaultPersisted.strReports,
       activities: saved.activities || defaultPersisted.activities,
       tasks: saved.tasks || [],
       onboarding: {
@@ -935,6 +941,7 @@ const iconPaths = {
   edit: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>',
   fileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line>',
   filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>',
+  flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line>',
   folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>',
   gauge: '<path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path>',
   grid: '<rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect>',
@@ -979,6 +986,7 @@ const state = {
   registers: persisted.registers,
   approvals: persisted.approvals,
   incidents: persisted.incidents,
+  strReports: persisted.strReports,
   activities: persisted.activities,
   calc: persisted.calc,
   toggles: persisted.toggles,
@@ -995,6 +1003,7 @@ const navGroups = [
       ["obligations", "landmark", "MAS SFA rules", "Licence and conduct"],
       ["clients", "users", "Client dashboard", "Families and entities"],
       ["cdd", "shield", "CDD & KYC", "SOW, SOF, screening"],
+      ["str", "flag", "STR & AML alerts", "Suspicious transaction reporting"],
     ],
   },
   {
@@ -1068,6 +1077,7 @@ function savePersisted() {
       registers: state.registers,
       approvals: state.approvals,
       incidents: state.incidents,
+      strReports: state.strReports,
       activities: state.activities,
       calc: state.calc,
       toggles: state.toggles,
@@ -1164,6 +1174,12 @@ function todayIso() {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function todayLabel() {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const date = new Date();
+  return `${String(date.getDate()).padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 function makeTrainingEvidenceId() {
@@ -2097,6 +2113,70 @@ function privacyView() {
   `;
 }
 
+function strPillClass(status) {
+  if (status === "Raised") return "action";
+  if (status === "MLRO review") return "at-risk";
+  return "on-track";
+}
+
+function strView() {
+  const open = state.strReports.filter((item) => item[5] === "Raised" || item[5] === "MLRO review").length;
+  const filed = state.strReports.filter((item) => item[5] === "Filed (STRO)").length;
+  const noFile = state.strReports.filter((item) => item[5].startsWith("No-file")).length;
+  const stages = ["Raised", "MLRO review", "Filed (STRO)"];
+  return `
+    ${pageHead("STR & AML alerts", "Escalate internal suspicions to the MLRO, decide whether to file a Suspicious Transaction Report with STRO, and evidence every decision.", `<button class="secondary-button" data-action="open-str">${icon("flag")} Raise suspicion report</button>`)}
+    <div class="notice">${icon("alertCircle")} Filing is mandatory under the CDSA (s.39) and TSOFA when there is knowledge or reasonable suspicion that property is criminal proceeds or linked to terrorism financing. Do not tip off the subject (s.48 CDSA) — continue the relationship only on MLRO direction.</div>
+    <div class="stat-grid">
+      ${statCard("Open reviews", open, "Awaiting MLRO direction", "alertCircle", "str")}
+      ${statCard("Filed with STRO", filed, "SONAR submissions logged", "flag", "str")}
+      ${statCard("No-file decisions", noFile, "Rationale documented", "fileText", "str")}
+      ${statCard("MLRO owner", "1", "Sarah Lim · MLRO", "userCheck", "str")}
+      ${statCard("Filing channel", "SONAR", "STRO online reporting", "shield", "str")}
+    </div>
+    <div class="pipeline">
+      ${stages.map((stage, index) => `<div class="pipeline-step ${state.strReports.some((item) => item[5] === stage) ? "active" : ""}"><span>${index + 1}</span><strong>${stage}</strong></div>`).join("")}
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Suspicious transaction register</h2><p class="panel-subtitle">Internal escalation, MLRO decision, and STRO filing trail</p></div><span class="tag">${state.strReports.length} cases</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Subject</th><th>Typology / trigger</th><th>Raised by</th><th>Status</th><th>STRO ref</th><th></th></tr></thead><tbody>
+        ${state.strReports.map(([id, subject, typology, raisedBy, raised, status, reference]) => `<tr>
+          <td><div class="table-name">${esc(id.toUpperCase())}</div><div class="table-meta">${esc(raised)}</div></td>
+          <td>${esc(subject)}</td>
+          <td>${esc(typology)}</td>
+          <td>${esc(raisedBy)}</td>
+          <td><span class="status-pill ${strPillClass(status)}">${esc(status)}</span></td>
+          <td>${esc(reference)}</td>
+          <td><div class="button-row">
+            ${status === "Filed (STRO)" || status.startsWith("No-file") ? "" : `<button class="table-action" data-str-advance="${id}">${status === "MLRO review" ? "File with STRO" : "Send to MLRO"}</button>`}
+            ${status === "MLRO review" ? `<button class="table-action ghost" data-str-nofile="${id}">No-file</button>` : ""}
+            ${status === "Raised" ? "" : `<button class="table-action ghost" data-str-reverse="${id}" title="Undo last step">${icon("undo")} Undo</button>`}
+          </div></td>
+        </tr>`).join("")}
+      </tbody></table></div>
+    </div>
+    <div class="tracker-grid" style="margin-top:12px">
+      <div class="panel">
+        <div class="panel-head"><div><h2>When to escalate</h2><p class="panel-subtitle">Common family-office red flags</p></div></div>
+        <div class="deadline-rule-list">${[
+          ["Source-of-funds mismatch", "Inflows inconsistent with documented SOW/SOF or the client profile."],
+          ["Unusual third-party flows", "Funds to or from unrelated third parties without economic rationale."],
+          ["Sanctions / adverse media nexus", "Screening hit, negative news, or links to high-risk jurisdictions."],
+          ["Structuring or reluctance", "Transactions split to avoid thresholds, or client evasiveness on CDD."],
+        ].map(([name, rule]) => `<div class="deadline-rule"><div><div class="obligation-name">${name}</div><div class="obligation-desc">${rule}</div></div></div>`).join("")}</div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>Statutory basis & filing</h2><p class="panel-subtitle">Singapore AML/CFT reporting</p></div></div>
+        <div class="deadline-rule-list">
+          <div class="deadline-rule"><div><div class="obligation-name">CDSA s.39 — STR duty</div><div class="obligation-desc">File when you know or suspect property represents proceeds of crime.</div></div><a class="text-link" href="https://sso.agc.gov.sg/Act/CDTOSCCBA1992" target="_blank" rel="noreferrer">Read</a></div>
+          <div class="deadline-rule"><div><div class="obligation-name">TSOFA — terrorism financing</div><div class="obligation-desc">Report suspected terrorism-financing property or transactions.</div></div><a class="text-link" href="https://sso.agc.gov.sg/Act/TSFA2002" target="_blank" rel="noreferrer">Read</a></div>
+          <div class="deadline-rule"><div><div class="obligation-name">STRO — file via SONAR</div><div class="obligation-desc">Suspicious Transaction Reporting Office online reporting portal.</div></div><a class="text-link" href="https://www.police.gov.sg/sonar" target="_blank" rel="noreferrer">SONAR</a></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function reportsView() {
   return `
     ${pageHead("Reports & evidence packs", "Generate adviser-ready, auditor-ready, and board-ready compliance summaries.", `<button class="secondary-button" data-action="create-pack">${icon("plus")} Generate pack</button>`)}
@@ -2113,6 +2193,7 @@ function reportsView() {
         ["Cyber Hygiene pack", "Admin accounts, patches, standards, malware, perimeter, MFA", "IT owner", "07 Jun 2026"],
         ["EWRA pack", "Environmental risk assessment and portfolio data gaps", "Investment committee", "07 Jun 2026"],
         ["PDPA control pack", "Retention, access, and incident records", "DPO", "29 May 2026"],
+        ["STR / AML filing log", "Suspicion reports, MLRO decisions, and STRO references", "MLRO · auditor", "07 Jun 2026"],
       ].map(([title, description, audience, date]) => `<article class="report-card"><span class="doc-icon">${icon("fileText")}</span><div><h3>${title}</h3><p>${description}</p><div class="rule-card-foot"><span>${audience}</span><span>${date}</span></div><button class="table-action" data-action="download-pack" data-pack="${title}">Generate</button></div></article>`).join("")}
     </div>
   `;
@@ -2190,6 +2271,7 @@ function renderMain() {
     "client-onboarding": clientOnboardingView,
     "employee-onboarding": employeeOnboardingView,
     cdd: cddView,
+    str: strView,
     "mas-trm": masTrmView,
     "cyber-hygiene": cyberHygieneView,
     "trm-cyber": trmCyberView,
@@ -2298,10 +2380,32 @@ function incidentModal() {
   `;
 }
 
+function strModal() {
+  return `
+    <div class="modal-backdrop" data-action="close-modal">
+      <section class="modal small" role="dialog" aria-modal="true" aria-label="Raise suspicion report" data-modal-panel>
+        <div class="modal-head">
+          <div><div class="eyebrow">MLRO workflow</div><h2 style="margin-top:4px">Raise internal suspicion report</h2></div>
+          <button class="modal-close" aria-label="Close" data-action="close-modal">${icon("x")}</button>
+        </div>
+        <form id="str-form">
+          <div class="modal-body"><div class="form-grid">
+            <div class="form-field"><label for="str-subject">Subject (client / entity)</label><select id="str-subject">${structureOptions().map((name) => `<option>${name}</option>`).join("")}</select></div>
+            <div class="form-field"><label for="str-typology">Typology / trigger</label><select id="str-typology"><option>Source-of-funds inconsistency</option><option>Unusual third-party inflow</option><option>Sanctions / adverse media hit</option><option>Structuring or threshold avoidance</option><option>Client reluctance on CDD</option><option>Other</option></select></div>
+            <div class="form-field"><label for="str-note">Grounds for suspicion</label><textarea id="str-note" required placeholder="Describe the transaction, parties, amounts, and why it appears suspicious..."></textarea></div>
+          </div></div>
+          <div class="modal-footer"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button class="primary-button" type="submit">${icon("flag")} Send to MLRO</button></div>
+        </form>
+      </section>
+    </div>
+  `;
+}
+
 function modal() {
   if (state.modal === "client") return clientModal();
   if (state.modal === "task") return taskModal();
   if (state.modal === "incident") return incidentModal();
+  if (state.modal === "str") return strModal();
   return "";
 }
 
@@ -2621,6 +2725,47 @@ function reverseEmployeeOnboarding(id) {
   setToast(`${item.name} onboarding item reversed.`);
 }
 
+function advanceStr(id) {
+  const item = state.strReports.find((report) => report[0] === id);
+  if (!item) return;
+  const flow = ["Raised", "MLRO review", "Filed (STRO)"];
+  const index = flow.indexOf(item[5]);
+  if (index < 0 || index >= flow.length - 1) return;
+  item[5] = flow[index + 1];
+  if (item[5] === "Filed (STRO)") item[6] = `SONAR-2026-${String(Date.now()).slice(-6)}`;
+  addAudit(state.currentRole, `advanced STR ${item[0].toUpperCase()} (${item[1]}) to ${item[5]}`);
+  setToast(`STR ${item[0].toUpperCase()} moved to ${item[5]}.`);
+}
+
+function reverseStr(id) {
+  const item = state.strReports.find((report) => report[0] === id);
+  if (!item) return;
+  const flow = ["Raised", "MLRO review", "Filed (STRO)"];
+  if (item[5].startsWith("No-file")) {
+    item[5] = "MLRO review";
+    item[6] = "—";
+  } else {
+    const index = flow.indexOf(item[5]);
+    if (index <= 0) {
+      setToast(`STR ${item[0].toUpperCase()} is already at the first step.`);
+      return;
+    }
+    if (item[5] === "Filed (STRO)") item[6] = "—";
+    item[5] = flow[index - 1];
+  }
+  addAudit(state.currentRole, `reversed STR ${item[0].toUpperCase()} (${item[1]}) to ${item[5]}`);
+  setToast(`STR ${item[0].toUpperCase()} reversed to ${item[5]}.`);
+}
+
+function noFileStr(id) {
+  const item = state.strReports.find((report) => report[0] === id);
+  if (!item) return;
+  item[5] = "No-file (documented)";
+  item[6] = "Rationale logged";
+  addAudit(state.currentRole, `recorded a no-file STR decision for ${item[0].toUpperCase()} (${item[1]})`);
+  setToast(`No-file decision documented for ${item[0].toUpperCase()}.`);
+}
+
 function bindEvents() {
   document.querySelectorAll("[data-view]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -2756,6 +2901,15 @@ function bindEvents() {
       setToast(`${item[0].toUpperCase()} control update reversed.`);
     });
   });
+  document.querySelectorAll("[data-str-advance]").forEach((button) => {
+    button.addEventListener("click", () => advanceStr(button.dataset.strAdvance));
+  });
+  document.querySelectorAll("[data-str-reverse]").forEach((button) => {
+    button.addEventListener("click", () => reverseStr(button.dataset.strReverse));
+  });
+  document.querySelectorAll("[data-str-nofile]").forEach((button) => {
+    button.addEventListener("click", () => noFileStr(button.dataset.strNofile));
+  });
   document.querySelectorAll("[data-approval]").forEach((button) => {
     button.addEventListener("click", () => {
       if (!canApprove()) return;
@@ -2821,6 +2975,10 @@ function bindEvents() {
       if (action === "toast-upload") setToast("Evidence upload workspace is ready.");
       if (action === "open-incident") {
         state.modal = "incident";
+        render();
+      }
+      if (action === "open-str") {
+        state.modal = "str";
         render();
       }
       if (action === "run-screening") {
@@ -2926,6 +3084,23 @@ function bindEvents() {
     addAudit(state.currentRole, `logged a DPO incident assessment: ${document.getElementById("incident-title").value}`);
     state.modal = null;
     setToast("Incident logged for DPO assessment.");
+  });
+  const strForm = document.getElementById("str-form");
+  strForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const subject = document.getElementById("str-subject").value;
+    state.strReports.unshift([
+      `str-${String(Date.now()).slice(-4)}`,
+      subject,
+      document.getElementById("str-typology").value,
+      state.currentRole,
+      todayLabel(),
+      "Raised",
+      "—",
+    ]);
+    addAudit(state.currentRole, `raised an internal suspicion report on ${subject}`);
+    state.modal = null;
+    setToast("Suspicion report raised and routed to the MLRO.");
   });
   const unlockForm = document.getElementById("unlock-form");
   unlockForm?.addEventListener("submit", (event) => {
