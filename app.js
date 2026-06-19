@@ -249,7 +249,7 @@ const riskStatements = [
   },
   {
     id: "rs5",
-    area: "EWRA",
+    area: "ENRM",
     risk: "Portfolio climate transition data is incomplete for discretionary mandates.",
     inherent: "Medium",
     residual: "At risk",
@@ -281,6 +281,29 @@ const ewraAssessments = [
   ["Aurelia Family Holdings", "13O onshore portfolio", "Listed equities and private credit", "Medium", "Low", "78%", "on-track"],
   ["Straits Horizon VCC", "Umbrella VCC", "Credit, equities, private markets", "Medium", "Medium", "64%", "at-risk"],
   ["Tan Heritage Trust", "13U enhanced-tier fund", "Concentrated operating-company exposure", "High", "Medium", "58%", "action"],
+];
+
+const amlRiskCategories = [
+  ["Customer risk", "PEPs, complex trusts, multi-jurisdiction beneficial owners", "High", "Strong"],
+  ["Product / service risk", "Discretionary mandates, fund structures, intra-family lending", "Medium", "Strong"],
+  ["Country / geographic risk", "Cross-border source of wealth and higher-risk jurisdictions", "High", "Moderate"],
+  ["Delivery-channel risk", "Non-face-to-face onboarding introduced via advisers", "Medium", "Moderate"],
+  ["New-technology risk", "Digital assets and new payment or settlement channels", "Medium", "Weak"],
+];
+
+const screeningLists = [
+  ["UN Security Council Consolidated List", "Sanctions and terrorism financing", "01 Jun 2026"],
+  ["MAS TSOFA lists (1st & 2nd Schedule)", "Singapore terrorism-financing designations", "01 Jun 2026"],
+  ["MAS Investor Alert List", "Unregulated or unlicensed entities", "28 May 2026"],
+  ["PEP & adverse-media database", "Politically exposed persons and negative news", "01 Jun 2026"],
+];
+
+const masDigest = [
+  ["SFA04-N02", "Notice", "high", "18 Jun 2026", "AML/CFT for capital markets intermediaries", "Reinforces risk-based CDD, ongoing screening, and prompt STR filing for CMS holders and the family offices they serve.", "https://www.mas.gov.sg/regulation/anti-money-laundering"],
+  ["FSM-N22", "Notice", "medium", "16 Jun 2026", "Cyber Hygiene baseline", "Mandatory controls for administrative accounts, patching, malware protection, perimeter defence, and multi-factor authentication.", "https://www.mas.gov.sg/regulation/notices/notice-fsm-n22"],
+  ["TRM-2021", "Guideline", "medium", "12 Jun 2026", "Technology Risk Management", "Board-level technology governance, operational resilience, and third-party technology-risk expectations.", "https://www.mas.gov.sg/-/media/MAS/Regulations-and-Financial-Stability/Regulatory-and-Supervisory-Framework/Risk-Management/TRM-Guidelines-18-January-2021.pdf"],
+  ["ENRM-AM", "Guideline", "low", "09 Jun 2026", "Environmental Risk Management for Asset Managers", "Governance, risk-assessment, and disclosure expectations for environmental risk in managed portfolios.", "https://www.mas.gov.sg/regulation/guidelines/guidelines-on-environmental-risk-management-for-asset-managers"],
+  ["AML-HUB", "Update", "medium", "07 Jun 2026", "MAS AML/CFT industry updates", "Latest MAS guidance papers, typologies, and enforcement actions relevant to family-office compliance.", "https://www.mas.gov.sg/regulation/anti-money-laundering"],
 ];
 
 const clientOnboardingDefaults = [
@@ -458,7 +481,7 @@ const documents = [
   ["shield", "SOW and SOF evidence index", "CDD · 3 onboarding cases · Updated 07 Jun 2026"],
   ["activity", "MAS TRM control evidence", "Control pack · Recovery and vendor evidence"],
   ["lock", "Cyber Hygiene evidence pack", "Admin accounts · MFA · Patching · Updated 07 Jun 2026"],
-  ["trendingUp", "EWRA portfolio assessment", "Environmental risk · Data coverage · Updated 07 Jun 2026"],
+  ["trendingUp", "Environmental risk (ENRM) assessment", "Climate transition & physical risk · Data coverage · Updated 07 Jun 2026"],
   ["fileText", "CRS / FATCA classifications", "Register · 7 entities · Updated 25 May 2026"],
   ["heartHandshake", "PTIS donation ledger", "Ledger · FY2026 · Updated 20 May 2026"],
   ["lock", "Cyber incident response plan", "Plan · v2.1 · Updated 15 May 2026"],
@@ -550,8 +573,8 @@ const rulePacks = [
   },
   {
     id: "ewra",
-    name: "EWRA / environmental risk",
-    scope: "Environmental risk assessment for discretionary portfolios and mandates",
+    name: "Environmental risk (ENRM)",
+    scope: "Environmental risk management for discretionary portfolios and mandates",
     controls: 9,
     source: "MAS ERM asset managers",
     url: "https://www.mas.gov.sg/regulation/guidelines/guidelines-on-environmental-risk-management-for-asset-managers",
@@ -627,7 +650,7 @@ const complianceWorkItems = [
   ["sfa-custody", "MAS / SFA", "Custody and client assets", "Maintain custodian due diligence, asset segregation, confirmations, and reconciliation evidence.", "Monthly", "on-track", "documents"],
   ["sfa-outsourcing", "MAS / SFA", "Outsourcing and service providers", "Track due diligence, agreements, service levels, concentration risk, and exit plans.", "Quarterly", "at-risk", "trm-cyber"],
   ["sfa-complaints", "MAS / SFA", "Complaints and incidents", "Register complaints, regulator-impacting incidents, root cause, remediation, and closure evidence.", "Event-driven", "at-risk", "obligations"],
-  ["aml-ewra", "CDD / KYC", "Enterprise-wide ML/TF/PF risk assessment", "Assess client, country, product, transaction, channel, and delivery risk.", "Annual", "action", "cdd"],
+  ["aml-ewra", "CDD / KYC", "Enterprise-wide ML/TF/PF risk assessment", "Assess client, country, product, transaction, channel, and delivery risk.", "Annual", "action", "aml-ewra"],
   ["aml-policy", "CDD / KYC", "AML/CFT policy and controls", "Maintain board-approved policy, procedures, controls, screening rules, and escalation routes.", "Annual", "at-risk", "cdd"],
   ["aml-onboarding", "CDD / KYC", "Client onboarding CDD", "Identify and verify clients, authorised persons, controllers, settlors, protectors, and beneficial owners.", "Per client", "action", "client-onboarding"],
   ["aml-sow", "CDD / KYC", "Source of wealth", "Corroborate how wealth was accumulated using business, sale, inheritance, salary, investment, or tax evidence.", "Per client", "action", "cdd"],
@@ -843,6 +866,12 @@ const defaultPersisted = {
     ["str-4421", "Tan Heritage Trust", "Source-of-funds inconsistency", "Sarah Lim", "28 May 2026", "MLRO review", "—"],
     ["str-4409", "Straits Horizon VCC", "Sanctions / adverse media hit", "Jia Wei", "12 May 2026", "No-file (documented)", "Rationale logged"],
   ],
+  monitoringAlerts: [
+    ["alert-7781", "Chen Legacy Trust", "Sanctions match", "Possible name match to an EU-listed individual; pending disambiguation.", "30 May 2026", "In review"],
+    ["alert-7782", "Raffles Quay Master VCC", "Transaction pattern", "Round-sum inflows just under the reporting threshold across three days.", "29 May 2026", "Open"],
+    ["alert-7770", "Aurelia Family Holdings", "Adverse media", "Negative news on a connected party; assessed as not relevant.", "18 May 2026", "Cleared"],
+  ],
+  digestStamp: "18 Jun 2026, 07:00 SGT",
   activities: audits.map((item) => [...item]),
   calc: {
     scheme: "13U",
@@ -895,6 +924,8 @@ function loadPersisted() {
       approvals: saved.approvals || defaultPersisted.approvals,
       incidents: saved.incidents || defaultPersisted.incidents,
       strReports: saved.strReports || defaultPersisted.strReports,
+      monitoringAlerts: saved.monitoringAlerts || defaultPersisted.monitoringAlerts,
+      digestStamp: saved.digestStamp || defaultPersisted.digestStamp,
       activities: saved.activities || defaultPersisted.activities,
       tasks: saved.tasks || [],
       onboarding: {
@@ -938,6 +969,8 @@ const iconPaths = {
   clock: '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
   download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line>',
   eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle>',
+  externalLink: '<path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>',
+  refreshCw: '<path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path><path d="M3 21v-5h5"></path>',
   edit: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>',
   fileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line>',
   filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>',
@@ -987,6 +1020,8 @@ const state = {
   approvals: persisted.approvals,
   incidents: persisted.incidents,
   strReports: persisted.strReports,
+  monitoringAlerts: persisted.monitoringAlerts,
+  digestStamp: persisted.digestStamp,
   activities: persisted.activities,
   calc: persisted.calc,
   toggles: persisted.toggles,
@@ -1001,8 +1036,16 @@ const navGroups = [
       ["overview", "grid", "Dashboard", "Daily control priorities"],
       ["workbench", "checkCircle", "Control register", "40 managed controls"],
       ["obligations", "landmark", "MAS SFA rules", "Licence and conduct"],
+      ["mas-updates", "bell", "MAS updates", "Daily notice digest"],
       ["clients", "users", "Client dashboard", "Families and entities"],
+    ],
+  },
+  {
+    label: "AML / CFT",
+    items: [
       ["cdd", "shield", "CDD & KYC", "SOW, SOF, screening"],
+      ["aml-ewra", "trendingUp", "ML/TF risk assessment", "Enterprise-wide EWRA"],
+      ["monitoring", "eye", "Monitoring & screening", "Alerts and sanctions lists"],
       ["str", "flag", "STR & AML alerts", "Suspicious transaction reporting"],
     ],
   },
@@ -1020,7 +1063,7 @@ const navGroups = [
     items: [
       ["trm-cyber", "lock", "TRM & cyber", "Systems and access"],
       ["training", "checkCircle", "Training quiz", "TRM cyber attestation"],
-      ["ewra", "trendingUp", "EWRA", "Environmental risk"],
+      ["ewra", "trendingUp", "Environmental risk", "ENRM governance"],
       ["privacy", "lock", "PDPA / DPO", "Privacy controls"],
       ["settings", "settings", "Settings", "Workspace preferences"],
     ],
@@ -1078,6 +1121,8 @@ function savePersisted() {
       approvals: state.approvals,
       incidents: state.incidents,
       strReports: state.strReports,
+      monitoringAlerts: state.monitoringAlerts,
+      digestStamp: state.digestStamp,
       activities: state.activities,
       calc: state.calc,
       toggles: state.toggles,
@@ -1752,11 +1797,11 @@ function cyberHygieneView() {
 
 function ewraView() {
   return `
-    ${pageHead("EWRA / environmental risk", "Assess transition and physical environmental risk across discretionary portfolios and mandates.", `<button class="secondary-button" data-control-task="EWRA review">${icon("plus")} Add EWRA action</button>`)}
-    <div class="notice">${icon("trendingUp")} EWRA is presented as a portfolio risk workflow: data coverage, sector exposure, transition risk, physical risk, and stewardship actions.</div>
+    ${pageHead("Environmental risk (ENRM)", "Assess transition and physical environmental risk across discretionary portfolios and mandates per the MAS ENRM guidelines.", `<button class="secondary-button" data-control-task="ENRM review">${icon("plus")} Add ENRM action</button>`)}
+    <div class="notice">${icon("trendingUp")} Environmental risk management (ENRM) is presented as a portfolio risk workflow: data coverage, sector exposure, transition risk, physical risk, and stewardship actions. Distinct from the AML/CFT enterprise-wide risk assessment.</div>
     <div class="panel view-panel">
       <div class="table-wrap"><table><thead><tr><th>Portfolio</th><th>Structure</th><th>Exposure</th><th>Transition risk</th><th>Physical risk</th><th>Data coverage</th><th>Status</th><th></th></tr></thead><tbody>
-        ${ewraAssessments.map(([portfolio, structure, exposure, transition, physical, coverage, status]) => `<tr><td><div class="table-name">${portfolio}</div></td><td>${structure}</td><td>${exposure}</td><td>${transition}</td><td>${physical}</td><td>${coverage}</td><td><span class="status-pill ${status}">${statusLabel(status)}</span></td><td><button class="table-action" data-control-task="${portfolio} EWRA evidence">Update</button></td></tr>`).join("")}
+        ${ewraAssessments.map(([portfolio, structure, exposure, transition, physical, coverage, status]) => `<tr><td><div class="table-name">${portfolio}</div></td><td>${structure}</td><td>${exposure}</td><td>${transition}</td><td>${physical}</td><td>${coverage}</td><td><span class="status-pill ${status}">${statusLabel(status)}</span></td><td><button class="table-action" data-control-task="${portfolio} ENRM evidence">Update</button></td></tr>`).join("")}
       </tbody></table></div>
     </div>
     <div class="category-grid" style="margin-top:12px">
@@ -2113,6 +2158,110 @@ function privacyView() {
   `;
 }
 
+function riskPillClass(level) {
+  return level === "Low" ? "on-track" : level === "Medium" ? "at-risk" : "action";
+}
+
+function residualRisk(inherent, control) {
+  const inherentScore = { Low: 1, Medium: 2, High: 3 }[inherent] || 2;
+  const controlAdjust = { Strong: -1, Moderate: 0, Weak: 1 }[control] || 0;
+  const score = Math.max(1, Math.min(3, inherentScore + controlAdjust));
+  return { 1: "Low", 2: "Medium", 3: "High" }[score];
+}
+
+function amlEwraView() {
+  const residuals = amlRiskCategories.map(([, , inherent, control]) => residualRisk(inherent, control));
+  const high = residuals.filter((level) => level === "High").length;
+  const overall = high > 0 ? "High" : residuals.includes("Medium") ? "Medium" : "Low";
+  return `
+    ${pageHead("AML/CFT enterprise-wide risk assessment", "Assess inherent money-laundering, terrorism-financing, and proliferation-financing risk against control effectiveness to derive residual risk and set the risk-based approach.", `<button class="secondary-button" data-control-task="AML/CFT EWRA review">${icon("plus")} Add EWRA action</button>`)}
+    <div class="notice">${icon("shield")} MAS expects a periodic enterprise-wide risk assessment (EWRA) across customer, product, country/geography, and delivery-channel risk. Residual risk = inherent risk adjusted for control effectiveness, and drives risk-based CDD and monitoring.</div>
+    <div class="stat-grid">
+      ${statCard("Overall residual", overall, "Across all risk categories", "gauge", "aml-ewra")}
+      ${statCard("Risk categories", amlRiskCategories.length, "Customer, product, country, channel", "layers", "aml-ewra")}
+      ${statCard("High residual", high, "Categories needing enhanced controls", "alertCircle", "aml-ewra")}
+      ${statCard("Last assessment", "07 Jun 2026", "MLRO and board reviewed", "calendar", "aml-ewra")}
+      ${statCard("Next review", "Annual", "Or on material change", "clock", "aml-ewra")}
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Risk-category assessment</h2><p class="panel-subtitle">Inherent risk adjusted by control effectiveness = residual</p></div><span class="tag">3-point methodology</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Risk category</th><th>Drivers</th><th>Inherent</th><th>Control effectiveness</th><th>Residual</th></tr></thead><tbody>
+        ${amlRiskCategories.map(([name, drivers, inherent, control]) => {
+          const residual = residualRisk(inherent, control);
+          return `<tr>
+            <td><div class="table-name">${esc(name)}</div></td>
+            <td>${esc(drivers)}</td>
+            <td><span class="status-pill ${riskPillClass(inherent)}">${inherent}</span></td>
+            <td>${esc(control)}</td>
+            <td><span class="status-pill ${riskPillClass(residual)}">${residual}</span></td>
+          </tr>`;
+        }).join("")}
+      </tbody></table></div>
+    </div>
+    <div class="tracker-grid" style="margin-top:12px">
+      <div class="panel">
+        <div class="panel-head"><div><h2>Methodology</h2><p class="panel-subtitle">How residual risk is derived</p></div></div>
+        <div class="deadline-rule-list">
+          <div class="deadline-rule"><div><div class="obligation-name">Inherent risk</div><div class="obligation-desc">Rated Low / Medium / High from customer, product, country, and channel drivers.</div></div></div>
+          <div class="deadline-rule"><div><div class="obligation-name">Control effectiveness</div><div class="obligation-desc">Strong controls lower, and weak controls raise, the residual rating.</div></div></div>
+          <div class="deadline-rule"><div><div class="obligation-name">Residual risk</div><div class="obligation-desc">Drives risk-based CDD depth, monitoring intensity, and approval levels.</div></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>Reference</h2><p class="panel-subtitle">MAS AML/CFT framework</p></div></div>
+        <div class="deadline-rule-list">
+          <div class="deadline-rule"><div><div class="obligation-name">MAS AML/CFT notices & guidelines</div><div class="obligation-desc">Risk-assessment and risk-based-approach requirements for financial institutions.</div></div><a class="text-link" href="https://www.mas.gov.sg/regulation/anti-money-laundering" target="_blank" rel="noreferrer">Open</a></div>
+          <div class="deadline-rule"><div><div class="obligation-name">Risk-based approach</div><div class="obligation-desc">Apply enhanced measures to higher-risk customers and simplified measures to lower-risk.</div></div></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function monitoringPillClass(status) {
+  if (status === "Open") return "action";
+  if (status === "Cleared") return "on-track";
+  return "at-risk";
+}
+
+function monitoringView() {
+  const open = state.monitoringAlerts.filter((alert) => alert[5] === "Open" || alert[5] === "In review").length;
+  const escalated = state.monitoringAlerts.filter((alert) => alert[5] === "Escalated").length;
+  const cleared = state.monitoringAlerts.filter((alert) => alert[5] === "Cleared").length;
+  return `
+    ${pageHead("Transaction monitoring & screening", "Run ongoing name screening and transaction monitoring, disposition every alert, and escalate genuine suspicions to an STR.", `<button class="secondary-button" data-action="run-screening">${icon("shield")} Run screening</button>`)}
+    <div class="notice">${icon("eye")} Screen all parties against sanctions, TSOFA, and PEP / adverse-media sources at onboarding and periodically. Disposition each alert; escalate genuine suspicion to the MLRO for an STR decision.</div>
+    <div class="stat-grid">
+      ${statCard("Open alerts", open, "Awaiting disposition", "alertCircle", "monitoring")}
+      ${statCard("Escalated to STR", escalated, "Handed to MLRO", "flag", "monitoring")}
+      ${statCard("Cleared", cleared, "False positives documented", "checkCircle", "monitoring")}
+      ${statCard("Last screening", state.screenings.lastRun, `${state.screenings.persons} persons screened`, "clock", "monitoring")}
+      ${statCard("Lists monitored", screeningLists.length, "Sanctions, TSOFA, PEP", "layers", "monitoring")}
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Monitoring alerts</h2><p class="panel-subtitle">Disposition queue with STR escalation</p></div><span class="tag">${state.monitoringAlerts.length} alerts</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Alert</th><th>Subject</th><th>Type</th><th>Detail</th><th>Status</th><th></th></tr></thead><tbody>
+        ${state.monitoringAlerts.map(([id, subject, type, detail, date, status]) => `<tr>
+          <td><div class="table-name">${esc(id.toUpperCase())}</div><div class="table-meta">${esc(date)}</div></td>
+          <td>${esc(subject)}</td>
+          <td>${esc(type)}</td>
+          <td>${esc(detail)}</td>
+          <td><span class="status-pill ${monitoringPillClass(status)}">${esc(status)}</span></td>
+          <td><div class="button-row">
+            ${status === "Cleared" || status === "Escalated" ? "" : `<button class="table-action" data-alert-advance="${id}">${status === "In review" ? "Clear" : "Review"}</button>`}
+            ${status === "Open" || status === "In review" ? `<button class="table-action ghost" data-alert-escalate="${id}">${icon("flag")} Escalate to STR</button>` : ""}
+            ${status === "Open" ? "" : `<button class="table-action ghost" data-alert-reverse="${id}" title="Undo last step">${icon("undo")} Undo</button>`}
+          </div></td>
+        </tr>`).join("")}
+      </tbody></table></div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Screening lists</h2><p class="panel-subtitle">Sources screened and last refresh</p></div><span class="tag">${state.screenings.exceptions} open exceptions</span></div>
+      <div class="deadline-rule-list">${screeningLists.map(([name, detail, updated]) => `<div class="deadline-rule"><div><div class="obligation-name">${esc(name)}</div><div class="obligation-desc">${esc(detail)}</div></div><span class="tag">Updated ${esc(updated)}</span></div>`).join("")}</div>
+    </div>
+  `;
+}
+
 function strPillClass(status) {
   if (status === "Raised") return "action";
   if (status === "MLRO review") return "at-risk";
@@ -2177,6 +2326,40 @@ function strView() {
   `;
 }
 
+function digestPillClass(priority) {
+  if (priority === "high") return "action";
+  if (priority === "medium") return "at-risk";
+  return "on-track";
+}
+
+function masUpdatesView() {
+  const notices = masDigest.filter((item) => item[1] === "Notice").length;
+  const high = masDigest.filter((item) => item[2] === "high").length;
+  return `
+    ${pageHead("MAS regulatory updates", "A daily digest of MAS Notices, Guidelines, and industry updates relevant to the family office — summarised, prioritised, and linked to the official source.", `<button class="secondary-button" data-action="refresh-digest">${icon("refreshCw")} Refresh digest</button>`)}
+    <div class="notice">${icon("bell")} Digest as of <strong>${esc(state.digestStamp)}</strong>. Review each item, assess impact on the workspace, and open the official MAS source to read the full text.</div>
+    <div class="stat-grid">
+      ${statCard("Items in digest", masDigest.length, "Notices, guidelines, updates", "fileText", "mas-updates")}
+      ${statCard("MAS Notices", notices, "Binding requirements", "landmark", "mas-updates")}
+      ${statCard("High priority", high, "Assess impact promptly", "alertCircle", "mas-updates")}
+      ${statCard("Last refresh", state.digestStamp, "Scheduled morning pull", "clock", "mas-updates")}
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Today's digest</h2><p class="panel-subtitle">Most recent MAS publications, newest first</p></div><span class="tag">${masDigest.length} items</span></div>
+      <div class="deadline-rule-list">
+        ${masDigest.map(([ref, type, priority, date, title, summary, url]) => `<div class="deadline-rule">
+          <div>
+            <div class="obligation-name">${esc(title)} <span class="status-pill ${digestPillClass(priority)}">${esc(type)}</span></div>
+            <div class="obligation-desc">${esc(ref)} · ${esc(date)} — ${esc(summary)}</div>
+          </div>
+          <a class="table-action" href="${esc(url)}" target="_blank" rel="noreferrer">${icon("externalLink")} Open</a>
+        </div>`).join("")}
+      </div>
+    </div>
+    <div class="notice">${icon("clock")} Demo note: this digest is curated for the prototype. In production it would be populated each morning by a scheduled server-side job that pulls the MAS website / RSS, summarises new publications, and links to the official source — live fetching is not possible directly from a static page.</div>
+  `;
+}
+
 function reportsView() {
   return `
     ${pageHead("Reports & evidence packs", "Generate adviser-ready, auditor-ready, and board-ready compliance summaries.", `<button class="secondary-button" data-action="create-pack">${icon("plus")} Generate pack</button>`)}
@@ -2191,7 +2374,8 @@ function reportsView() {
         ["Client onboarding pack", "CDD, SOW, SOF, screening, and risk acceptance", "Compliance committee", "07 Jun 2026"],
         ["MAS TRM pack", "Technology risk controls, gaps, and recovery evidence", "Board / adviser", "07 Jun 2026"],
         ["Cyber Hygiene pack", "Admin accounts, patches, standards, malware, perimeter, MFA", "IT owner", "07 Jun 2026"],
-        ["EWRA pack", "Environmental risk assessment and portfolio data gaps", "Investment committee", "07 Jun 2026"],
+        ["Environmental risk (ENRM) pack", "Environmental risk assessment and portfolio data gaps", "Investment committee", "07 Jun 2026"],
+        ["AML/CFT EWRA pack", "Enterprise-wide ML/TF/PF risk assessment and residual ratings", "Board · MAS exam", "07 Jun 2026"],
         ["PDPA control pack", "Retention, access, and incident records", "DPO", "29 May 2026"],
         ["STR / AML filing log", "Suspicion reports, MLRO decisions, and STRO references", "MLRO · auditor", "07 Jun 2026"],
       ].map(([title, description, audience, date]) => `<article class="report-card"><span class="doc-icon">${icon("fileText")}</span><div><h3>${title}</h3><p>${description}</p><div class="rule-card-foot"><span>${audience}</span><span>${date}</span></div><button class="table-action" data-action="download-pack" data-pack="${title}">Generate</button></div></article>`).join("")}
@@ -2271,7 +2455,10 @@ function renderMain() {
     "client-onboarding": clientOnboardingView,
     "employee-onboarding": employeeOnboardingView,
     cdd: cddView,
+    "aml-ewra": amlEwraView,
+    monitoring: monitoringView,
     str: strView,
+    "mas-updates": masUpdatesView,
     "mas-trm": masTrmView,
     "cyber-hygiene": cyberHygieneView,
     "trm-cyber": trmCyberView,
@@ -2766,6 +2953,52 @@ function noFileStr(id) {
   setToast(`No-file decision documented for ${item[0].toUpperCase()}.`);
 }
 
+function advanceAlert(id) {
+  const item = state.monitoringAlerts.find((alert) => alert[0] === id);
+  if (!item) return;
+  const flow = ["Open", "In review", "Cleared"];
+  const index = flow.indexOf(item[5]);
+  if (index < 0 || index >= flow.length - 1) return;
+  item[5] = flow[index + 1];
+  addAudit(state.currentRole, `dispositioned monitoring alert ${item[0].toUpperCase()} (${item[1]}) to ${item[5]}`);
+  setToast(`Alert ${item[0].toUpperCase()} moved to ${item[5]}.`);
+}
+
+function reverseAlert(id) {
+  const item = state.monitoringAlerts.find((alert) => alert[0] === id);
+  if (!item) return;
+  const flow = ["Open", "In review", "Cleared"];
+  if (item[5] === "Escalated") {
+    item[5] = "In review";
+  } else {
+    const index = flow.indexOf(item[5]);
+    if (index <= 0) {
+      setToast(`Alert ${item[0].toUpperCase()} is already open.`);
+      return;
+    }
+    item[5] = flow[index - 1];
+  }
+  addAudit(state.currentRole, `reversed monitoring alert ${item[0].toUpperCase()} (${item[1]}) to ${item[5]}`);
+  setToast(`Alert ${item[0].toUpperCase()} reversed to ${item[5]}.`);
+}
+
+function escalateAlert(id) {
+  const item = state.monitoringAlerts.find((alert) => alert[0] === id);
+  if (!item) return;
+  item[5] = "Escalated";
+  state.strReports.unshift([
+    `str-${String(Date.now()).slice(-4)}`,
+    item[1],
+    item[2],
+    state.currentRole,
+    todayLabel(),
+    "Raised",
+    "—",
+  ]);
+  addAudit(state.currentRole, `escalated monitoring alert ${item[0].toUpperCase()} (${item[1]}) to an STR`);
+  setToast(`Alert ${item[0].toUpperCase()} escalated — STR raised for MLRO review.`);
+}
+
 function bindEvents() {
   document.querySelectorAll("[data-view]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -2910,6 +3143,15 @@ function bindEvents() {
   document.querySelectorAll("[data-str-nofile]").forEach((button) => {
     button.addEventListener("click", () => noFileStr(button.dataset.strNofile));
   });
+  document.querySelectorAll("[data-alert-advance]").forEach((button) => {
+    button.addEventListener("click", () => advanceAlert(button.dataset.alertAdvance));
+  });
+  document.querySelectorAll("[data-alert-reverse]").forEach((button) => {
+    button.addEventListener("click", () => reverseAlert(button.dataset.alertReverse));
+  });
+  document.querySelectorAll("[data-alert-escalate]").forEach((button) => {
+    button.addEventListener("click", () => escalateAlert(button.dataset.alertEscalate));
+  });
   document.querySelectorAll("[data-approval]").forEach((button) => {
     button.addEventListener("click", () => {
       if (!canApprove()) return;
@@ -2986,6 +3228,11 @@ function bindEvents() {
         state.screenings.exceptions = 2;
         addAudit(state.currentRole, "ran a sanctions, PEP, and adverse-media screening workflow");
         setToast("Screening complete. Two exceptions remain under review.");
+      }
+      if (action === "refresh-digest") {
+        state.digestStamp = `${todayLabel()}, just now`;
+        addAudit(state.currentRole, "refreshed the MAS regulatory-updates digest");
+        setToast("MAS digest refreshed.");
       }
       if (action === "register-help") {
         window.open("https://www.acra.gov.sg/manage/companies/legal-requirements-common-offences/maintaining-local-companys-information-registers/company-registers/", "_blank", "noopener,noreferrer");
