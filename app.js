@@ -306,6 +306,90 @@ const masDigest = [
   ["AML-HUB", "Update", "medium", "07 Jun 2026", "MAS AML/CFT industry updates", "Latest MAS guidance papers, typologies, and enforcement actions relevant to family-office compliance.", "https://www.mas.gov.sg/regulation/anti-money-laundering"],
 ];
 
+// Critical business services with a named recovery owner and Service Recovery
+// Time Objective (SRTO), per the MAS BCM Guidelines (June 2022).
+const bcmServices = [
+  ["Portfolio management & trade execution", "Jia Wei", "4 hours", "Order/PMS platform, custodian, market data"],
+  ["Client payments & settlement", "Marcus Goh", "4 hours", "Banking portal, custodian, payment approvers"],
+  ["AML/CFT screening & STR filing", "Sarah Lim", "1 business day", "Screening database, STRO SONAR portal, MLRO"],
+  ["Regulatory & client reporting", "Marcus Goh", "1 business day", "Reporting system, fund admin, document store"],
+  ["Client servicing & communications", "Jia Wei", "4 hours", "Telephony, email, CRM, principals' contacts"],
+];
+
+// Scenario playbooks — "what to do", aligned to the MAS BCM Guidelines.
+const bcmScenarios = [
+  {
+    id: "tech-outage",
+    name: "Technology / system outage or cyber-attack",
+    icon: "server",
+    trigger: "Core platform, network, or data is unavailable, corrupted, or compromised.",
+    srto: "4 hours",
+    steps: [
+      "Activate the BCP and convene the crisis management team; appoint the named recovery owner.",
+      "Isolate and contain affected systems; for a suspected cyber-attack, preserve evidence and do not wipe.",
+      "Fail over to backup / disaster-recovery systems and verify data integrity before resuming.",
+      "Restore each critical service within its SRTO; keep clients and principals informed of status.",
+      "Report reportable cyber incidents to MAS within the required timeframe and log a post-incident review.",
+    ],
+  },
+  {
+    id: "premises",
+    name: "Premises inaccessible",
+    icon: "home",
+    trigger: "Office is unusable due to fire, power loss, building evacuation, or denial of access.",
+    srto: "4 hours",
+    steps: [
+      "Account for all staff safety first; trigger the call tree to confirm everyone is safe.",
+      "Invoke remote-working or the alternate site; relocate critical functions to recovery locations.",
+      "Confirm staff can reach systems and records securely from the recovery location.",
+      "Resume each critical service within its SRTO and notify clients of any temporary contact changes.",
+      "Log the disruption, decisions, and recovery times for the BCM record and board reporting.",
+    ],
+  },
+  {
+    id: "pandemic",
+    name: "Pandemic / widespread staff unavailability",
+    icon: "users",
+    trigger: "A large share of staff are simultaneously unavailable (illness, transport, public health).",
+    srto: "Same day",
+    steps: [
+      "Activate split-team / segregated and remote-working arrangements to reduce single points of failure.",
+      "Prioritise critical business services; stand down non-essential activities.",
+      "Deploy cross-trained backups and named deputies for each critical service.",
+      "Monitor capacity daily and re-prioritise; protect health and safety throughout.",
+      "Keep clients and MAS informed where service levels are materially affected.",
+    ],
+  },
+  {
+    id: "third-party",
+    name: "Key third-party / outsourced provider failure",
+    icon: "briefcase",
+    trigger: "A custodian, fund administrator, bank, or technology vendor suffers a major disruption.",
+    srto: "1 business day",
+    steps: [
+      "Invoke the provider's BCP and your contractual escalation / SLA contacts.",
+      "Switch to the alternate provider or pre-agreed manual workaround for the affected service.",
+      "Assess client impact; apply temporary controls to keep obligations met during the outage.",
+      "Escalate to senior management; consider the outsourcing exit plan if recovery is prolonged.",
+      "Record the event, supplier response, and any control gaps for the vendor and BCM registers.",
+    ],
+  },
+  {
+    id: "key-person",
+    name: "Key person unavailability",
+    icon: "userCheck",
+    trigger: "A critical individual (MLRO, key decision-maker, system administrator) is suddenly unavailable.",
+    srto: "Same day",
+    steps: [
+      "Activate the named deputy / succession arrangement for the affected role.",
+      "Ensure the deputy has documented procedures and the required system access.",
+      "Re-route approvals and authorities so controls and segregation of duties are preserved.",
+      "Communicate the temporary arrangement to staff, clients, and counterparties as needed.",
+      "Review the bus-factor for that role and strengthen cross-training afterwards.",
+    ],
+  },
+];
+
 const clientOnboardingDefaults = [
   {
     id: "ng-family",
@@ -872,6 +956,11 @@ const defaultPersisted = {
     ["alert-7770", "Aurelia Family Holdings", "Adverse media", "Negative news on a connected party; assessed as not relevant.", "18 May 2026", "Cleared"],
   ],
   digestStamp: "18 Jun 2026, 07:00 SGT",
+  bcpDrills: [
+    ["drill-2026-1", "Technology / system outage", "22 Apr 2026", "Passed", "Recovered portfolio system in 3h12m vs 4h SRTO.", "Jia Wei"],
+    ["drill-2026-2", "Premises inaccessible", "11 Mar 2026", "Passed", "All staff worked from alternate site within 2h.", "Marcus Goh"],
+    ["drill-2025-4", "Key third-party failure", "05 Dec 2025", "Lessons noted", "Custodian failover slow; updated call tree and SLA.", "Sarah Lim"],
+  ],
   activities: audits.map((item) => [...item]),
   calc: {
     scheme: "13U",
@@ -926,6 +1015,7 @@ function loadPersisted() {
       strReports: saved.strReports || defaultPersisted.strReports,
       monitoringAlerts: saved.monitoringAlerts || defaultPersisted.monitoringAlerts,
       digestStamp: saved.digestStamp || defaultPersisted.digestStamp,
+      bcpDrills: saved.bcpDrills || defaultPersisted.bcpDrills,
       activities: saved.activities || defaultPersisted.activities,
       tasks: saved.tasks || [],
       onboarding: {
@@ -971,6 +1061,8 @@ const iconPaths = {
   eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle>',
   externalLink: '<path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>',
   refreshCw: '<path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path><path d="M3 21v-5h5"></path>',
+  server: '<rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect><rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect><line x1="6" x2="6.01" y1="6" y2="6"></line><line x1="6" x2="6.01" y1="18" y2="18"></line>',
+  home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>',
   edit: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>',
   fileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line>',
   filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>',
@@ -1022,6 +1114,7 @@ const state = {
   strReports: persisted.strReports,
   monitoringAlerts: persisted.monitoringAlerts,
   digestStamp: persisted.digestStamp,
+  bcpDrills: persisted.bcpDrills,
   activities: persisted.activities,
   calc: persisted.calc,
   toggles: persisted.toggles,
@@ -1062,6 +1155,7 @@ const navGroups = [
     label: "Risk & privacy",
     items: [
       ["trm-cyber", "lock", "TRM & cyber", "Systems and access"],
+      ["bcm", "activity", "Business continuity", "BCP scenarios & SRTO"],
       ["training", "checkCircle", "Training quiz", "TRM cyber attestation"],
       ["ewra", "trendingUp", "Environmental risk", "ENRM governance"],
       ["privacy", "lock", "PDPA / DPO", "Privacy controls"],
@@ -1123,6 +1217,7 @@ function savePersisted() {
       strReports: state.strReports,
       monitoringAlerts: state.monitoringAlerts,
       digestStamp: state.digestStamp,
+      bcpDrills: state.bcpDrills,
       activities: state.activities,
       calc: state.calc,
       toggles: state.toggles,
@@ -2332,22 +2427,48 @@ function digestPillClass(priority) {
   return "on-track";
 }
 
+// Live MAS digest: populated daily by the Vercel cron pipeline (/api/mas-digest).
+// Falls back to the curated masDigest list when the backend is unavailable
+// (e.g. the static GitHub Pages copy, or before the first cron run).
+let liveDigest = null;
+let liveDigestTried = false;
+
+async function loadMasDigest(force = false, announce = false) {
+  if (liveDigestTried && !force) return;
+  liveDigestTried = true;
+  try {
+    const res = await fetch("/api/mas-digest", { headers: { accept: "application/json" } });
+    if (!res.ok) throw new Error("backend unavailable");
+    const data = await res.json();
+    if (!data || !Array.isArray(data.items) || !data.items.length) throw new Error("empty digest");
+    liveDigest = data;
+    if (data.stamp) state.digestStamp = data.stamp;
+    if (announce) setToast("MAS digest updated from the live MAS feed.");
+    else render();
+  } catch {
+    if (announce) setToast("Live MAS feed unavailable — showing the saved digest.");
+  }
+}
+
 function masUpdatesView() {
-  const notices = masDigest.filter((item) => item[1] === "Notice").length;
-  const high = masDigest.filter((item) => item[2] === "high").length;
+  if (!liveDigest && !liveDigestTried) loadMasDigest();
+  const items = liveDigest?.items || masDigest;
+  const live = Boolean(liveDigest);
+  const notices = items.filter((item) => item[1] === "Notice").length;
+  const high = items.filter((item) => item[2] === "high").length;
   return `
     ${pageHead("MAS regulatory updates", "A daily digest of MAS Notices, Guidelines, and industry updates relevant to the family office — summarised, prioritised, and linked to the official source.", `<button class="secondary-button" data-action="refresh-digest">${icon("refreshCw")} Refresh digest</button>`)}
-    <div class="notice">${icon("bell")} Digest as of <strong>${esc(state.digestStamp)}</strong>. Review each item, assess impact on the workspace, and open the official MAS source to read the full text.</div>
+    <div class="notice">${icon("bell")} Digest as of <strong>${esc(state.digestStamp)}</strong> ${live ? '<span class="status-pill on-track">Live feed</span>' : '<span class="status-pill at-risk">Saved copy</span>'}. Review each item, assess impact on the workspace, and open the official MAS source to read the full text.</div>
     <div class="stat-grid">
-      ${statCard("Items in digest", masDigest.length, "Notices, guidelines, updates", "fileText", "mas-updates")}
+      ${statCard("Items in digest", items.length, "Notices, guidelines, updates", "fileText", "mas-updates")}
       ${statCard("MAS Notices", notices, "Binding requirements", "landmark", "mas-updates")}
       ${statCard("High priority", high, "Assess impact promptly", "alertCircle", "mas-updates")}
-      ${statCard("Last refresh", state.digestStamp, "Scheduled morning pull", "clock", "mas-updates")}
+      ${statCard("Last refresh", state.digestStamp, live ? "Live MAS pull" : "Saved copy", "clock", "mas-updates")}
     </div>
     <div class="panel" style="margin-top:12px">
-      <div class="panel-head"><div><h2>Today's digest</h2><p class="panel-subtitle">Most recent MAS publications, newest first</p></div><span class="tag">${masDigest.length} items</span></div>
+      <div class="panel-head"><div><h2>Today's digest</h2><p class="panel-subtitle">Most recent MAS publications, newest first</p></div><span class="tag">${items.length} items</span></div>
       <div class="deadline-rule-list">
-        ${masDigest.map(([ref, type, priority, date, title, summary, url]) => `<div class="deadline-rule">
+        ${items.map(([ref, type, priority, date, title, summary, url]) => `<div class="deadline-rule">
           <div>
             <div class="obligation-name">${esc(title)} <span class="status-pill ${digestPillClass(priority)}">${esc(type)}</span></div>
             <div class="obligation-desc">${esc(ref)} · ${esc(date)} — ${esc(summary)}</div>
@@ -2356,7 +2477,68 @@ function masUpdatesView() {
         </div>`).join("")}
       </div>
     </div>
-    <div class="notice">${icon("clock")} Demo note: this digest is curated for the prototype. In production it would be populated each morning by a scheduled server-side job that pulls the MAS website / RSS, summarises new publications, and links to the official source — live fetching is not possible directly from a static page.</div>
+    <div class="notice">${icon("clock")} ${live
+      ? "Live: this digest is pulled each morning (07:00 SGT) by a scheduled server-side job that scrapes the MAS website, summarises new publications with an AI model, and links to the official source."
+      : "Showing the saved fallback digest. When deployed on Vercel with the backend configured, a daily cron refreshes this from the live MAS website automatically."}</div>
+  `;
+}
+
+function bcmPillClass(outcome) {
+  if (outcome === "Passed") return "on-track";
+  if (outcome === "Failed") return "action";
+  return "at-risk";
+}
+
+function bcmView() {
+  const lastDrill = state.bcpDrills[0]?.[2] || "—";
+  return `
+    ${pageHead("Business continuity management", "Keep critical business services running through disruption — with named recovery owners, Service Recovery Time Objectives (SRTO), and tested scenario playbooks, in line with the MAS BCM Guidelines.", `<button class="secondary-button" data-action="log-drill">${icon("activity")} Log BCP drill</button>`)}
+    <div class="notice">${icon("activity")} MAS expects a service-centric BCP: identify critical business services, map their end-to-end dependencies (people, processes, technology, third parties), set an SRTO for each, and test recovery regularly under board and senior-management oversight.</div>
+    <div class="stat-grid">
+      ${statCard("Critical services", bcmServices.length, "Service-centric scope", "layers", "bcm")}
+      ${statCard("Scenario playbooks", bcmScenarios.length, "Tested response plans", "fileText", "bcm")}
+      ${statCard("Tightest SRTO", "4 hours", "Trade execution & payments", "clock", "bcm")}
+      ${statCard("Last BCP drill", lastDrill, `${state.bcpDrills.length} drills logged`, "checkCircle", "bcm")}
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Critical business services</h2><p class="panel-subtitle">Recovery owner, SRTO, and key dependencies</p></div><span class="tag">${bcmServices.length} services</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Critical service</th><th>Recovery owner</th><th>SRTO</th><th>Key dependencies</th></tr></thead><tbody>
+        ${bcmServices.map(([service, owner, srto, deps]) => `<tr>
+          <td><div class="table-name">${esc(service)}</div></td>
+          <td>${esc(owner)}</td>
+          <td><span class="status-pill at-risk">${esc(srto)}</span></td>
+          <td>${esc(deps)}</td>
+        </tr>`).join("")}
+      </tbody></table></div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Scenario playbooks — what to do</h2><p class="panel-subtitle">Step-by-step response for each disruption, per the MAS BCM Guidelines</p></div><span class="tag">${bcmScenarios.length} scenarios</span></div>
+      <div class="scenario-list">
+        ${bcmScenarios.map((s) => `<div class="scenario-card">
+          <div class="scenario-head">
+            <div class="scenario-title">${icon(s.icon)} <strong>${esc(s.name)}</strong></div>
+            <span class="status-pill at-risk">SRTO ${esc(s.srto)}</span>
+          </div>
+          <div class="scenario-trigger">${icon("alertCircle")} ${esc(s.trigger)}</div>
+          <ol class="scenario-steps">${s.steps.map((step) => `<li>${esc(step)}</li>`).join("")}</ol>
+        </div>`).join("")}
+      </div>
+    </div>
+    <div class="tracker-grid" style="margin-top:12px">
+      <div class="panel">
+        <div class="panel-head"><div><h2>BCP drill register</h2><p class="panel-subtitle">Test outcomes and lessons learned</p></div><span class="tag">${state.bcpDrills.length} drills</span></div>
+        <div class="deadline-rule-list">${state.bcpDrills.map(([id, scenario, date, outcome, note]) => `<div class="deadline-rule"><div><div class="obligation-name">${esc(scenario)} <span class="status-pill ${bcmPillClass(outcome)}">${esc(outcome)}</span></div><div class="obligation-desc">${esc(date)} — ${esc(note)}</div></div></div>`).join("")}</div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>Governance & MAS basis</h2><p class="panel-subtitle">Singapore BCM expectations</p></div></div>
+        <div class="deadline-rule-list">
+          <div class="deadline-rule"><div><div class="obligation-name">Board & senior management oversight</div><div class="obligation-desc">Approve the BCM framework, appoint recovery owners, and review test results.</div></div></div>
+          <div class="deadline-rule"><div><div class="obligation-name">Dependency mapping</div><div class="obligation-desc">Map people, processes, technology, facilities, and third parties end-to-end.</div></div></div>
+          <div class="deadline-rule"><div><div class="obligation-name">Test, review & audit</div><div class="obligation-desc">Validate the BCP regularly; maintain a BCM audit plan and act on findings.</div></div></div>
+          <div class="deadline-rule"><div><div class="obligation-name">MAS BCM Guidelines (Jun 2022)</div><div class="obligation-desc">Service-centric continuity for critical business services.</div></div><a class="text-link" href="https://www.mas.gov.sg/-/media/mas/regulations-and-financial-stability/regulatory-and-supervisory-framework/risk-management/bcm-guidelines/bcm-guidelines-june-2022.pdf" target="_blank" rel="noreferrer">Read</a></div>
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -2462,6 +2644,7 @@ function renderMain() {
     "mas-trm": masTrmView,
     "cyber-hygiene": cyberHygieneView,
     "trm-cyber": trmCyberView,
+    bcm: bcmView,
     training: trainingView,
     ewra: ewraView,
     clients: clientsView,
@@ -3230,9 +3413,20 @@ function bindEvents() {
         setToast("Screening complete. Two exceptions remain under review.");
       }
       if (action === "refresh-digest") {
-        state.digestStamp = `${todayLabel()}, just now`;
         addAudit(state.currentRole, "refreshed the MAS regulatory-updates digest");
-        setToast("MAS digest refreshed.");
+        loadMasDigest(true, true);
+      }
+      if (action === "log-drill") {
+        state.bcpDrills.unshift([
+          `drill-${Date.now().toString().slice(-6)}`,
+          "Tabletop exercise",
+          todayLabel(),
+          "Passed",
+          "Walkthrough completed; recovery owners and SRTOs confirmed.",
+          state.currentRole,
+        ]);
+        addAudit(state.currentRole, "logged a business continuity drill");
+        setToast("BCP drill logged to the register.");
       }
       if (action === "register-help") {
         window.open("https://www.acra.gov.sg/manage/companies/legal-requirements-common-offences/maintaining-local-companys-information-registers/company-registers/", "_blank", "noopener,noreferrer");

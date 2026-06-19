@@ -2546,6 +2546,71 @@ tr:hover td {
   padding: 9px 14px;
 }
 
+.scenario-list {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  padding: 12px 14px 14px;
+}
+
+.scenario-card {
+  background: var(--ink-50);
+  border: var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.scenario-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.scenario-title {
+  align-items: center;
+  color: var(--ink-800);
+  display: flex;
+  font-size: 11px;
+  gap: 6px;
+}
+
+.scenario-title svg {
+  color: var(--teal);
+  height: 15px;
+  width: 15px;
+}
+
+.scenario-trigger {
+  align-items: flex-start;
+  color: var(--ink-500);
+  display: flex;
+  font-size: 9px;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.scenario-trigger svg {
+  flex: none;
+  height: 12px;
+  margin-top: 1px;
+  width: 12px;
+}
+
+.scenario-steps {
+  color: var(--ink-700);
+  display: grid;
+  font-size: 10px;
+  gap: 5px;
+  line-height: 1.45;
+  margin: 10px 0 0;
+  padding-left: 16px;
+}
+
+.scenario-steps li {
+  padding-left: 2px;
+}
+
 .source-note a,
 .text-link {
   color: var(--teal);
