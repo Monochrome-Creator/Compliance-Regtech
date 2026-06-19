@@ -179,6 +179,11 @@ const vccStructures = [
         navDate: "31 May 2026",
         filing: "Draft FS uploaded",
         status: "on-track",
+        investors: [
+          ["Meridian Grove Holdings", "Founder family holding co.", "S$28.0m"],
+          ["Aurelia Family Holdings", "Private investment company", "S$15.4m"],
+          ["Tan Heritage Trust", "Discretionary trust", "S$9.0m"],
+        ],
       },
       {
         id: "straits-income",
@@ -188,6 +193,10 @@ const vccStructures = [
         navDate: "31 May 2026",
         filing: "Manager attestation pending",
         status: "at-risk",
+        investors: [
+          ["Meridian Grove Holdings", "Founder family holding co.", "S$40.0m"],
+          ["Ong Legacy Trust", "Family trust", "S$21.8m"],
+        ],
       },
       {
         id: "straits-opportunities",
@@ -197,6 +206,10 @@ const vccStructures = [
         navDate: "31 May 2026",
         filing: "Valuation memo required",
         status: "action",
+        investors: [
+          ["Meridian Grove Holdings", "Founder family holding co.", "S$18.0m"],
+          ["Aurelia Family Holdings", "Private investment company", "S$12.8m"],
+        ],
       },
     ],
   },
@@ -304,6 +317,13 @@ const masDigest = [
   ["TRM-2021", "Guideline", "medium", "12 Jun 2026", "Technology Risk Management", "Board-level technology governance, operational resilience, and third-party technology-risk expectations.", "https://www.mas.gov.sg/-/media/MAS/Regulations-and-Financial-Stability/Regulatory-and-Supervisory-Framework/Risk-Management/TRM-Guidelines-18-January-2021.pdf"],
   ["ENRM-AM", "Guideline", "low", "09 Jun 2026", "Environmental Risk Management for Asset Managers", "Governance, risk-assessment, and disclosure expectations for environmental risk in managed portfolios.", "https://www.mas.gov.sg/regulation/guidelines/guidelines-on-environmental-risk-management-for-asset-managers"],
   ["AML-HUB", "Update", "medium", "07 Jun 2026", "MAS AML/CFT industry updates", "Latest MAS guidance papers, typologies, and enforcement actions relevant to family-office compliance.", "https://www.mas.gov.sg/regulation/anti-money-laundering"],
+];
+
+// MAS communication channels that arrive by email and are captured into the digest.
+const masEmailSources = [
+  ["MAS TX", "mas-tx@mas.gov.sg", "Transactional and supervisory correspondence on returns, submissions, and filing reminders."],
+  ["MASNET", "masnet@mas.gov.sg", "MASNET secure-network circulars, member notices, and operational bulletins."],
+  ["MAS", "no-reply@mas.gov.sg", "General MAS announcements, consultation papers, and new/amended Notices and Guidelines."],
 ];
 
 // Critical business services with a named recovery owner and Service Recovery
@@ -462,6 +482,20 @@ const employeeOnboardingDefaults = [
       access: false,
     },
   },
+];
+
+// What due diligence to perform on a prospective employee before engagement / access.
+const employeeDueDiligence = [
+  ["Identity verification", "Verify identity (NRIC/FIN/passport), right to work in Singapore, and current address."],
+  ["Employment & education history", "Confirm CV, employment dates, role, and verify professional qualifications/certifications."],
+  ["Reference checks", "Obtain and document references from previous employers, including reason for leaving."],
+  ["Fit and proper assessment", "Assess honesty, integrity, competence, and financial soundness per MAS fit-and-proper criteria."],
+  ["Regulatory & disqualification check", "Check MAS prohibition orders, disqualified directors, and any prior regulatory action."],
+  ["Criminal record check", "Check for criminal records or pending proceedings relevant to honesty and integrity."],
+  ["Bankruptcy & credit check", "Check for undischarged bankruptcy and material adverse financial standing."],
+  ["Sanctions, PEP & adverse media", "Screen the individual against sanctions lists, PEP databases, and adverse media."],
+  ["Conflicts of interest", "Declare outside business interests, related-party links, and directorships."],
+  ["Confidentiality & PDPA undertaking", "Obtain signed confidentiality, data-protection, and acceptable-use undertakings before access."],
 ];
 
 const obligations = [
@@ -1127,7 +1161,7 @@ const navGroups = [
     label: "Control centre",
     items: [
       ["overview", "grid", "Dashboard", "Daily control priorities"],
-      ["workbench", "checkCircle", "Control register", "40 managed controls"],
+      ["workbench", "calendar", "Compliance calendar", "Annual / quarterly / monthly tasks"],
       ["obligations", "landmark", "MAS SFA rules", "Licence and conduct"],
       ["mas-updates", "bell", "MAS updates", "Daily notice digest"],
       ["clients", "users", "Client dashboard", "Families and entities"],
@@ -1605,7 +1639,7 @@ function trackers() {
         </div>
       </div>
       <div class="panel">
-        <div class="panel-head"><div><h2>Evidence reminders</h2><p class="panel-subtitle">Next practical items for the compliance owner</p></div><button class="ghost-button" data-view="workbench">Control register ${icon("chevronRight")}</button></div>
+        <div class="panel-head"><div><h2>Evidence reminders</h2><p class="panel-subtitle">Next practical items for the compliance owner</p></div><button class="ghost-button" data-view="workbench">Compliance calendar ${icon("chevronRight")}</button></div>
         <div class="deadline-list">
           ${deadlines.map(([day, month, name, meta]) => `<div class="deadline-row"><div class="date-box"><div class="date-day">${day}</div><div class="date-month">${month}</div></div><div><div class="deadline-name">${name}</div><div class="deadline-meta">${meta}</div></div></div>`).join("")}
         </div>
@@ -1618,8 +1652,8 @@ function workbenchView() {
   const summary = workbenchSummary();
   const grouped = [...new Set(complianceWorkItems.map((item) => item[1]))];
   return `
-    ${pageHead("Compliance control register", "40 managed SFO/MFO compliance items covering MAS/SFA, CDD/KYC, VCCs, tax, PDPA, technology, staff controls, and evidence follow-up.", `<button class="secondary-button" data-action="open-task">${icon("plus")} Add control item</button>`)}
-    <div class="notice">${icon("checkCircle")} Built for a Singapore family-office compliance function: one operating list for regulatory controls, onboarding gates, fund structures, privacy, technology risk, and staff attestations.</div>
+    ${pageHead("Compliance calendar", "Your recurring work — annual, quarterly, monthly, weekly and event-driven compliance tasks across MAS/SFA, CDD/KYC, VCCs, tax, PDPA, technology, staff controls, and evidence follow-up.", `<button class="secondary-button" data-action="open-task">${icon("plus")} Add task</button>`)}
+    <div class="notice">${icon("calendar")} This is a working calendar, not a static list: each item shows how often it falls due (annual / quarterly / monthly / weekly / event-driven) so you know what needs attention this period.</div>
     <div class="stat-grid">
       ${statCard("Total controls", summary.total, "Managed control items", "checkCircle", "workbench")}
       ${statCard("Action due", summary.action, "Needs immediate work", "alertCircle", "workbench")}
@@ -1655,7 +1689,7 @@ function overview() {
         <h2>Start with the items that block onboarding, filings, or risk acceptance.</h2>
       </div>
       <div class="hero-actions">
-        <button class="primary-button" data-view="workbench">${icon("checkCircle")} Open control register</button>
+        <button class="primary-button" data-view="workbench">${icon("calendar")} Open compliance calendar</button>
         <button class="secondary-button" data-view="client-onboarding">${icon("userCheck")} Review onboarding</button>
       </div>
     </section>
@@ -1783,7 +1817,25 @@ function riskAssessmentView() {
   `;
 }
 
+// Risk-based periodic CDD/ECDD review cadence (MAS Notice 626 / AML/CFT ongoing
+// monitoring: higher risk = more frequent refresh).
+function reviewCadence(risk) {
+  if (risk === "critical") return "Every 6 months";
+  if (risk === "high") return "Annual";
+  if (risk === "medium") return "Every 2 years";
+  return "Every 3 years";
+}
+
+function reviewStatus(days) {
+  if (days < 0) return ["action", "Overdue"];
+  if (days <= 30) return ["at-risk", "Due soon"];
+  return ["on-track", "Current"];
+}
+
 function cddView() {
+  const reviewClients = visibleClients();
+  const dueReviews = reviewClients.filter((client) => client.days <= 30).length;
+  const overdueReviews = reviewClients.filter((client) => client.days < 0).length;
   const gates = [
     ["Client identity", "Legal name, registration, authority to act, connected parties", "on-track"],
     ["Beneficial ownership", "UBO, controllers, protectors, settlors, directors, nominees", "at-risk"],
@@ -1802,6 +1854,30 @@ function cddView() {
       <div class="panel-head"><div><h2>Client evidence matrix</h2><p class="panel-subtitle">SOW and SOF are visible as separate gates</p></div><span class="tag">${state.onboarding.clients.length} cases</span></div>
       <div class="table-wrap"><table><thead><tr><th>Case</th><th>Entity</th><th>Risk</th><th>Source of wealth</th><th>Source of funds</th><th>Next action</th><th></th></tr></thead><tbody>
         ${state.onboarding.clients.map((item) => `<tr><td><div class="table-name">${item.name}</div><div class="table-meta">${item.stage}</div></td><td>${item.entity}</td><td><span class="risk-pill ${item.risk}">${titleCase(item.risk)}</span></td><td>${evidenceStatus(item.sow)}</td><td>${evidenceStatus(item.sof)}</td><td>${item.next}</td><td><div class="button-row"><button class="table-action" data-advance-client="${item.id}">Advance</button><button class="table-action ghost" data-reverse-client="${item.id}" title="Undo last step">Undo</button></div></td></tr>`).join("")}
+      </tbody></table></div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Periodic CDD / ECDD / KYC review</h2><p class="panel-subtitle">Risk-based ongoing review of existing relationships — what is due and the next action</p></div><span class="tag">${overdueReviews} overdue · ${dueReviews} due soon</span></div>
+      <div class="notice">${icon("refreshCw")} MAS requires CDD to be kept current through ongoing reviews on a risk-sensitive basis. Higher-risk clients get enhanced due diligence (ECDD) and more frequent refresh of identity, beneficial ownership, SOW/SOF and screening.</div>
+      <div class="table-wrap"><table><thead><tr><th>Client</th><th>Risk</th><th>Review cycle</th><th>Last reviewed</th><th>Next review</th><th>Status</th><th>Next action</th></tr></thead><tbody>
+        ${reviewClients.map((client) => {
+          const [cls, label] = reviewStatus(client.days);
+          const isEcdd = client.risk === "critical" || client.risk === "high";
+          const action = client.days < 0
+            ? "Start review now — request refreshed SOW/SOF and re-screen"
+            : client.days <= 30
+              ? "Schedule review pack and notify relationship owner"
+              : "On schedule — monitor for trigger events";
+          return `<tr>
+            <td><div class="table-name">${esc(client.name)}</div><div class="table-meta">${esc(client.owner)}</div></td>
+            <td><span class="risk-pill ${client.risk}">${titleCase(client.risk)}</span></td>
+            <td>${reviewCadence(client.risk)}${isEcdd ? " · ECDD" : ""}</td>
+            <td>${esc(client.updated)}</td>
+            <td>${esc(client.nextReview)}</td>
+            <td><span class="status-pill ${cls}">${label}</span></td>
+            <td>${action}</td>
+          </tr>`;
+        }).join("")}
       </tbody></table></div>
     </div>
   `;
@@ -1867,6 +1943,13 @@ function employeeOnboardingView() {
         </article>`;
       }).join("")}
     </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Employee due-diligence checklist</h2><p class="panel-subtitle">Background checks to complete before a new hire is engaged and given access</p></div><span class="tag">${employeeDueDiligence.length} checks</span></div>
+      <div class="notice">${icon("userCheck")} Family-office staff handle client wealth and sensitive data, so each hire needs documented due diligence — verify who they are, that they are fit and proper, and that they are not disqualified or sanctioned, before granting access.</div>
+      <div class="deadline-rule-list">
+        ${employeeDueDiligence.map(([name, detail]) => `<div class="deadline-rule"><div><div class="obligation-name">${esc(name)}</div><div class="obligation-desc">${esc(detail)}</div></div></div>`).join("")}
+      </div>
+    </div>
   `;
 }
 
@@ -1910,12 +1993,14 @@ function ewraView() {
 function vccsView() {
   const vccs = visibleVccStructures();
   return `
-    ${pageHead("VCCs and umbrella structures", "Track VCC annual returns, AGMs, officer updates, umbrella VCCs, and each sub-fund separately.", `<button class="secondary-button" data-action="open-task">${icon("plus")} Add VCC task</button>`)}
-    <div class="notice">${icon("landmark")} ACRA guidance treats VCC filing details and sub-fund details as part of the annual return workflow. This screen keeps umbrella and sub-fund evidence visible.</div>
+    ${pageHead("VCCs and umbrella structures", "See every client and which sub-fund they invest in, across the umbrella VCC and each sub-fund.", `<button class="secondary-button" data-action="open-task">${icon("plus")} Add VCC task</button>`)}
+    <div class="notice">${icon("landmark")} This screen maps clients to the sub-funds they are invested in under each umbrella VCC, alongside the manager, custodian, and filing details.</div>
     <div class="vcc-workspace">
-      ${vccs.length ? vccs.map((vcc) => `
+      ${vccs.length ? vccs.map((vcc) => {
+        const investorCount = vcc.subFunds.reduce((total, fund) => total + (fund.investors?.length || 0), 0);
+        return `
         <article class="panel vcc-panel">
-          <div class="panel-head"><div><h2>${vcc.name}</h2><p class="panel-subtitle">${vcc.type} · ${vcc.registration} · ${vcc.client}</p></div><span class="status-pill ${vcc.status}">${statusLabel(vcc.status)}</span></div>
+          <div class="panel-head"><div><h2>${vcc.name}</h2><p class="panel-subtitle">${vcc.type} · ${vcc.registration} · ${vcc.client}</p></div><span class="tag">${vcc.subFunds.length} sub-funds · ${investorCount} client positions</span></div>
           <div class="detail-grid vcc-detail-grid">
             <div class="detail-box"><div class="tiny-label">Fund manager</div><div class="detail-value">${vcc.manager}</div></div>
             <div class="detail-box"><div class="tiny-label">Custodian</div><div class="detail-value">${vcc.custodian}</div></div>
@@ -1923,12 +2008,15 @@ function vccsView() {
             <div class="detail-box"><div class="tiny-label">AGM due</div><div class="detail-value">${vcc.agmDue}</div></div>
             <div class="detail-box"><div class="tiny-label">Annual return</div><div class="detail-value">${vcc.arDue}</div></div>
           </div>
-          <div class="source-note">${vcc.issue}</div>
           <div class="subfund-grid vcc-subfunds">
-            ${vcc.subFunds.map((fund) => `<div class="subfund-card"><div class="category-head"><h3>${fund.name}</h3><span class="status-pill ${fund.status}">${statusLabel(fund.status)}</span></div><p>${fund.strategy}</p><div class="evidence-row"><span>Assets</span><small>${fund.assets}</small></div><div class="evidence-row"><span>NAV date</span><small>${fund.navDate}</small></div><div class="evidence-row"><span>Filing evidence</span><small>${fund.filing}</small></div><button class="table-action" data-control-task="${fund.name} VCC evidence">Update sub-fund</button></div>`).join("")}
+            ${vcc.subFunds.map((fund) => `<div class="subfund-card"><div class="category-head"><h3>${fund.name}</h3><span class="tag">${fund.assets}</span></div><p>${fund.strategy}</p>
+              <div class="tiny-label" style="margin-top:8px">Clients in this sub-fund</div>
+              ${(fund.investors || []).map(([name, entity, commitment]) => `<div class="evidence-row"><span>${esc(name)} · ${esc(entity)}</span><small>${esc(commitment)}</small></div>`).join("") || `<div class="evidence-row"><span>No clients mapped yet</span></div>`}
+              <button class="table-action" data-control-task="${fund.name} VCC evidence">Update sub-fund</button></div>`).join("")}
           </div>
         </article>
-      `).join("") : `<div class="panel queue-empty">No VCC structures in this workspace.</div>`}
+      `;
+      }).join("") : `<div class="panel queue-empty">No VCC structures in this workspace.</div>`}
     </div>
   `;
 }
@@ -2359,15 +2447,23 @@ function monitoringView() {
 
 function strPillClass(status) {
   if (status === "Raised") return "action";
-  if (status === "MLRO review") return "at-risk";
+  if (status === "MLRO review" || status === "Filed (STRO)" || status === "Reported to Police") return "at-risk";
   return "on-track";
+}
+
+function strAdvanceLabel(status) {
+  if (status === "Raised") return "Send to MLRO";
+  if (status === "MLRO review") return "File with STRO";
+  if (status === "Filed (STRO)") return "Report to Police";
+  if (status === "Reported to Police") return "Notify MAS officer";
+  return "";
 }
 
 function strView() {
   const open = state.strReports.filter((item) => item[5] === "Raised" || item[5] === "MLRO review").length;
-  const filed = state.strReports.filter((item) => item[5] === "Filed (STRO)").length;
+  const filed = state.strReports.filter((item) => ["Filed (STRO)", "Reported to Police", "MAS officer notified"].includes(item[5])).length;
   const noFile = state.strReports.filter((item) => item[5].startsWith("No-file")).length;
-  const stages = ["Raised", "MLRO review", "Filed (STRO)"];
+  const stages = STR_FLOW;
   return `
     ${pageHead("STR & AML alerts", "Escalate internal suspicions to the MLRO, decide whether to file a Suspicious Transaction Report with STRO, and evidence every decision.", `<button class="secondary-button" data-action="open-str">${icon("flag")} Raise suspicion report</button>`)}
     <div class="notice">${icon("alertCircle")} Filing is mandatory under the CDSA (s.39) and TSOFA when there is knowledge or reasonable suspicion that property is criminal proceeds or linked to terrorism financing. Do not tip off the subject (s.48 CDSA) — continue the relationship only on MLRO direction.</div>
@@ -2392,7 +2488,7 @@ function strView() {
           <td><span class="status-pill ${strPillClass(status)}">${esc(status)}</span></td>
           <td>${esc(reference)}</td>
           <td><div class="button-row">
-            ${status === "Filed (STRO)" || status.startsWith("No-file") ? "" : `<button class="table-action" data-str-advance="${id}">${status === "MLRO review" ? "File with STRO" : "Send to MLRO"}</button>`}
+            ${status === "MAS officer notified" || status.startsWith("No-file") ? "" : `<button class="table-action" data-str-advance="${id}">${strAdvanceLabel(status)}</button>`}
             ${status === "MLRO review" ? `<button class="table-action ghost" data-str-nofile="${id}">No-file</button>` : ""}
             ${status === "Raised" ? "" : `<button class="table-action ghost" data-str-reverse="${id}" title="Undo last step">${icon("undo")} Undo</button>`}
           </div></td>
@@ -2416,6 +2512,15 @@ function strView() {
           <div class="deadline-rule"><div><div class="obligation-name">TSOFA — terrorism financing</div><div class="obligation-desc">Report suspected terrorism-financing property or transactions.</div></div><a class="text-link" href="https://sso.agc.gov.sg/Act/TSFA2002" target="_blank" rel="noreferrer">Read</a></div>
           <div class="deadline-rule"><div><div class="obligation-name">STRO — file via SONAR</div><div class="obligation-desc">Suspicious Transaction Reporting Office online reporting portal.</div></div><a class="text-link" href="https://www.police.gov.sg/sonar" target="_blank" rel="noreferrer">SONAR</a></div>
         </div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>After filing — onward reporting</h2><p class="panel-subtitle">The escalation does not stop at STRO</p></div><span class="tag">2 onward steps</span></div>
+      <div class="notice">${icon("flag")} Once a STR is filed, the matter must also be reported onward: notify the Police, then notify the MAS officer-in-charge for the family office. Keep the STRO acknowledgement and both onward notifications on file.</div>
+      <div class="deadline-rule-list">
+        <div class="deadline-rule"><div><div class="obligation-name">1 · Filed with STRO (SONAR)</div><div class="obligation-desc">Suspicious Transaction Report submitted and acknowledgement reference recorded.</div></div><span class="status-pill at-risk">Filed</span></div>
+        <div class="deadline-rule"><div><div class="obligation-name">2 · Report to the Police</div><div class="obligation-desc">Refer the suspected offence to the Police (CAD / STRO sits within the SPF) and log the report.</div></div><span class="status-pill at-risk">Next</span></div>
+        <div class="deadline-rule"><div><div class="obligation-name">3 · Notify the MAS officer-in-charge</div><div class="obligation-desc">Inform the MAS officer-in-charge responsible for the family office and provide the STR details.</div></div><span class="status-pill on-track">Final</span></div>
       </div>
     </div>
   `;
@@ -2474,6 +2579,17 @@ function masUpdatesView() {
             <div class="obligation-desc">${esc(ref)} · ${esc(date)} — ${esc(summary)}</div>
           </div>
           <a class="table-action" href="${esc(url)}" target="_blank" rel="noreferrer">${icon("externalLink")} Open</a>
+        </div>`).join("")}
+      </div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h2>Email-pulled sources</h2><p class="panel-subtitle">MAS TX, MASNET and MAS circulars arrive by email — captured here automatically</p></div><span class="tag">3 channels</span></div>
+      <div class="deadline-rule-list">
+        ${masEmailSources.map(([name, addr, desc]) => `<div class="deadline-rule">
+          <div>
+            <div class="obligation-name">${esc(name)} <span class="status-pill on-track">Pulled from email</span></div>
+            <div class="obligation-desc">${esc(addr)} — ${esc(desc)}</div>
+          </div>
         </div>`).join("")}
       </div>
     </div>
@@ -3095,10 +3211,12 @@ function reverseEmployeeOnboarding(id) {
   setToast(`${item.name} onboarding item reversed.`);
 }
 
+const STR_FLOW = ["Raised", "MLRO review", "Filed (STRO)", "Reported to Police", "MAS officer notified"];
+
 function advanceStr(id) {
   const item = state.strReports.find((report) => report[0] === id);
   if (!item) return;
-  const flow = ["Raised", "MLRO review", "Filed (STRO)"];
+  const flow = STR_FLOW;
   const index = flow.indexOf(item[5]);
   if (index < 0 || index >= flow.length - 1) return;
   item[5] = flow[index + 1];
@@ -3110,7 +3228,7 @@ function advanceStr(id) {
 function reverseStr(id) {
   const item = state.strReports.find((report) => report[0] === id);
   if (!item) return;
-  const flow = ["Raised", "MLRO review", "Filed (STRO)"];
+  const flow = STR_FLOW;
   if (item[5].startsWith("No-file")) {
     item[5] = "MLRO review";
     item[6] = "—";
