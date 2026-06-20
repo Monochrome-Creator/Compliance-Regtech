@@ -942,6 +942,7 @@ const trainingSources = [
 
 const defaultPersisted = {
   theme: "light",
+  lang: "en",
   workspace: "all",
   taskCount: 4,
   tasks: [],
@@ -1134,6 +1135,7 @@ const state = {
   selectedClient: null,
   toast: null,
   theme: persisted.theme,
+  lang: persisted.lang,
   workspace: persisted.workspace,
   taskCount: persisted.taskCount,
   tasks: persisted.tasks,
@@ -1237,6 +1239,7 @@ function savePersisted() {
     STORAGE_KEY,
     JSON.stringify({
       theme: state.theme,
+      lang: state.lang,
       workspace: state.workspace,
       taskCount: state.taskCount,
       tasks: state.tasks,
@@ -1419,6 +1422,7 @@ function topbar() {
       <div class="top-spacer"></div>
       <span class="demo-badge">Demo data</span>
       <span class="role-badge">${state.currentRole}</span>
+      <button class="theme-toggle" data-action="toggle-lang" aria-label="${state.lang === "zh" ? "Switch to English" : "切换到中文"}"><span>${state.lang === "zh" ? "EN" : "中文"}</span></button>
       <button class="theme-toggle" data-action="toggle-theme" aria-label="Switch to ${nextTheme} mode">${icon(state.theme === "dark" ? "sun" : "moon")}<span>${state.theme === "dark" ? "Light" : "Dark"}</span></button>
       <button class="icon-button" aria-label="Notifications">${icon("bell")}<span class="notify-dot"></span></button>
       <button class="primary-button" data-action="open-task">${icon("plus")} New task</button>
@@ -1461,10 +1465,10 @@ function sidebar() {
   };
   const navItem = ([id, iconName, label, description]) => {
     const count = navCount(id);
-    return `<button class="nav-link ${state.view === id ? "active" : ""}" data-view="${id}"><span class="nav-icon">${icon(iconName)}</span><span class="nav-copy"><span>${label}</span><small>${description || ""}</small></span>${count ? `<span class="nav-count">${count}</span>` : ""}</button>`;
+    return `<button class="nav-link ${state.view === id ? "active" : ""}" data-view="${id}"><span class="nav-icon">${icon(iconName)}</span><span class="nav-copy"><span>${label}${zh(label)}</span><small>${description || ""}</small></span>${count ? `<span class="nav-count">${count}</span>` : ""}</button>`;
   };
   const railGroup = (group) => `<div class="rail-group" aria-label="${group.label}">${group.items.map(([id, iconName, label]) => `<button class="rail-button ${state.view === id ? "active" : ""}" title="${label}" aria-label="${label}" data-view="${id}">${icon(iconName)}</button>`).join("")}</div>`;
-  const sideGroups = navGroups.map((group) => `<div class="nav-group"><div class="nav-section-title">${group.label}</div>${group.items.map(navItem).join("")}</div>`).join("");
+  const sideGroups = navGroups.map((group) => `<div class="nav-group"><div class="nav-section-title">${group.label}${zh(group.label)}</div>${group.items.map(navItem).join("")}</div>`).join("");
   return `
     <aside class="rail">
       <div class="rail-mark">H</div>
@@ -1502,12 +1506,71 @@ function sidebar() {
   `;
 }
 
+// Chinese (中文) terms for the EN/中文 toggle. Keyed by the exact English UI
+// string; only nav labels, nav group titles, and page-head titles are mapped so
+// the rest of the interface stays clean and uncluttered.
+const zhDict = {
+  // Nav group titles
+  "Control centre": "控制中心",
+  "AML / CFT": "反洗钱 / 反恐融资",
+  "Operating files": "运营档案",
+  "Risk & privacy": "风险与隐私",
+  // Nav item labels
+  "Dashboard": "仪表板",
+  "Compliance calendar": "合规日历",
+  "MAS SFA rules": "证券期货法规则",
+  "MAS updates": "监管更新",
+  "Client dashboard": "客户面板",
+  "CDD & KYC": "客户尽职调查",
+  "ML/TF risk assessment": "洗钱 / 恐怖融资风险评估",
+  "Monitoring & screening": "监控与筛查",
+  "STR & AML alerts": "可疑交易报告与警报",
+  "Client onboarding": "客户入职",
+  "VCC & funds": "可变资本公司与基金",
+  "Staff controls": "员工管控",
+  "Documents": "文件",
+  "TRM & cyber": "科技风险与网络安全",
+  "Business continuity": "业务连续性",
+  "Training quiz": "培训测验",
+  "Environmental risk": "环境风险",
+  "PDPA / DPO": "个人数据保护",
+  "Settings": "设置",
+  // Page-head titles
+  "SFO/MFO compliance dashboard": "家族办公室合规仪表板",
+  "Risk assessment": "风险评估",
+  "Employee onboarding": "员工入职",
+  "MAS TRM control tracker": "科技风险管理",
+  "Cyber Hygiene": "网络安全基础",
+  "Environmental risk (ENRM)": "环境风险管理",
+  "VCCs and umbrella structures": "可变资本公司与伞型结构",
+  "TRM & cyber controls": "科技风险与网络安全控制",
+  "Evidence library": "证据库",
+  "Singapore rule packs": "新加坡规则包",
+  "Statutory registers": "法定登记册",
+  "Ownership & KYC": "股权与了解客户",
+  "Maker-checker approvals": "复核审批",
+  "AML/CFT enterprise-wide risk assessment": "反洗钱企业级风险评估",
+  "Transaction monitoring & screening": "交易监控与筛查",
+  "MAS regulatory updates": "MAS 监管更新",
+  "Business continuity management": "业务连续性管理",
+  "Reports & evidence packs": "报告与证据包",
+  "Access control": "访问控制",
+  "Audit trail": "审计跟踪",
+  "Workspace settings": "工作区设置",
+};
+
+function zh(en) {
+  if (state.lang !== "zh") return "";
+  const term = zhDict[en];
+  return term ? ` <span class="zh-term">${term}</span>` : "";
+}
+
 function pageHead(title, subtitle, extra = "") {
   return `
     <div class="page-head">
       <div>
         <div class="eyebrow">Singapore · SFO/MFO compliance</div>
-        <h1>${title}</h1>
+        <h1>${title}${zh(title)}</h1>
         <p class="page-subtitle">${subtitle}</p>
       </div>
       <div class="head-actions">
@@ -3499,6 +3562,10 @@ function bindEvents() {
       if (action === "toggle-theme") {
         state.theme = state.theme === "dark" ? "light" : "dark";
         setToast(`${titleCase(state.theme)} mode enabled.`);
+      }
+      if (action === "toggle-lang") {
+        state.lang = state.lang === "zh" ? "en" : "zh";
+        setToast(state.lang === "zh" ? "已显示中文术语。" : "Chinese terms hidden.");
       }
       if (action === "export") exportCsv();
       if (action === "clear-heat") {

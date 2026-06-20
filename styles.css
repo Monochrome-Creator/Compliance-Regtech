@@ -377,11 +377,36 @@ button {
   white-space: nowrap;
 }
 
+.nav-copy span:has(.zh-term) {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  line-height: 1.25;
+}
+
 .nav-copy small {
   color: var(--ink-500);
   font-size: 9px;
   font-weight: 600;
   line-height: 1.15;
+}
+
+.zh-term {
+  color: var(--ink-500);
+  font-weight: 500;
+  opacity: 0.78;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.page-head h1 .zh-term {
+  font-size: 0.62em;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.nav-section-title .zh-term {
+  font-size: 0.92em;
 }
 
 .nav-count {
